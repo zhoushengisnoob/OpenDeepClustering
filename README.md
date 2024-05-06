@@ -12,9 +12,13 @@
 [![GitHub pull request](https://img.shields.io/badge/PRs-welcome-blue)](https://github.com/zhoushengisnoob/OpenDeepClustering/pulls)
 
 ## About
-Hello :wave:, we are a team of researchers from the Eagle-Lab(InnovativE SoftwAre TechnoloGy DeveLopment CentEr), Zhejiang University.
+Hello :wave:, we are a team of researchers from the Eagle-Lab (InnovativE SoftwAre TechnoloGy DeveLopment CentEr), Zhejiang University. Here are two questions and answers that embody the essence of our mission for this repository.
+### What is clustering task?
+The primary purpose of clustering is to assign the instances into groups so that the similar samples belong to the same cluster while dissimilar samples belong to different clusters.
+### Why deep clustering?
+Although shallow clustering methods like KMeans have achieved tremendous success, they can no longer be directly applied to deal with high-dimension or complicated unstructured data like images. 
 
-We are dedicated to making deep clustering more accessible and efficient. Our code is open-source and we welcome contributions from the community.
+Deep Clustering, which aims at joint optimization of deep representation learning and clustering, arises and has attracted increasing attention recently in the community.
 
 
 ## Installation
