@@ -14,7 +14,7 @@ conda activate deepclustering
 
 Then, install the dependencies.
 ```
-pip install -r requirements.txt
+wating for update
 ```
 
 ## Reference
