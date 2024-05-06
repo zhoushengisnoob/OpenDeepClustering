@@ -20,6 +20,10 @@ Although shallow clustering methods like KMeans have achieved tremendous success
 
 Deep Clustering, which aims at joint optimization of deep representation learning and clustering, arises and has attracted increasing attention recently in the community.
 
+## Supported Models
+| Model | Taxonomy     | Clustering Module  | Type  |
+| -     | -            | -                  | -     |
+| [DEC](https://proceedings.mlr.press/v48/xieb16.pdf)   | Simultaneous | Auto-encoder based | Image |
 
 ## Installation
 Step-1, clone this repository.
