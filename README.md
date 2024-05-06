@@ -5,6 +5,18 @@ Hello :wave:, we are a team of researchers from the Eagle-Lab(InnovativE SoftwAr
 We are dedicated to making deep clustering more accessible and efficient. Our code is open-source and we welcome contributions from the community.
 ![Deep Clustering](pic/deepclustering-logo.png)
 
+## Usage
+We highly recommend that you create a new conda environment firstly.
+```
+conda create -n deepclustering python=3.10
+conda activate deepclustering
+```
+
+Then, install the dependencies.
+```
+pip install -r requirements.txt
+```
+
 ## Reference
 :smiley:Our paper is posted on arXiv: [A comprehensive survey on deep clustering: Taxonomy, challenges, and future directions](https://arxiv.org/abs/2206.07579). 
 ```
