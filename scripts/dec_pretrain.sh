@@ -2,7 +2,7 @@
 # please be sure to let class num equal to the last element of dims
 nohup python -u models/Simultaneous/DEC/pretrain.py \
     --dataset_name MNIST \
-    --dataset_dir /backup/lanzhenzhongLab/yujia/liangguanbao/dataset \
+    --dataset_dir ~/dataset \
     --class_num 10 \
     --grey True \
     --img_size_at 28 28 \
