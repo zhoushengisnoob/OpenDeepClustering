@@ -71,7 +71,7 @@ python models/Simultaneous/DEC/main.py
 (Alternative way) Please refer to the `scripts` packages for direct running script with default settings.
 ```sh
 cd OpenDeepClustering
-bash scripts/dec.sh
+bash scripts/dec_pretrain.sh
 ```
 
 ## Implementation Results
