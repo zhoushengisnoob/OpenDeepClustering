@@ -21,7 +21,7 @@ Although shallow clustering methods like KMeans have achieved tremendous success
 Deep Clustering, which aims at joint optimization of deep representation learning and clustering, arises and has attracted increasing attention recently in the community.
 
 ## :dart:News
-[24/05/06] We have already implemented **10+ algorithms** which can be classified into four categories (Generative, Iterative, MultiStage, Simultaneous) locally. These algorithms will be uploaded soon after rigorous testing. **If you find this repository useful for you studies, please star it**.
+[24/05/06] We have already implemented **10+ algorithms** which can be classified into four categories (Generative, Iterative, MultiStage, Simultaneous) locally. These algorithms will be uploaded soon after rigorous testing. **If you find this repository useful for you studies, please star it** :star:.
 
 ## Supported Models
 | Model                                                 | Taxonomy     | Clustering Module  | Type  |
@@ -81,3 +81,5 @@ If you have any questions or suggestions while using our code, please feel free 
 
 :email: Send us a email: [rencailgb@gmail.com](mailto:rencailgb@gmail.com)
 
+## Star History
+![Star History Chart](https://api.star-history.com/svg?repos=zhoushengisnoob/OpenDeepClustering&type=Date)
