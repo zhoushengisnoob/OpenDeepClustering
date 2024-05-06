@@ -56,6 +56,7 @@ pip install -r requirements.txt
 ## :rocket:Quick start
 > [!IMPORTANT]
 > Please be sure to make `OpenDeepClustering` as the working directory.
+
 (Recommend way)
 Please modify the configuration files in the `configs` packages before running the codes. 
 - The `base.yaml` contains the basic experiment settings for all the methods.
