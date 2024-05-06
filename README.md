@@ -21,7 +21,7 @@ Step-2, create a new conda environment and download the dependencies.
 ```
 conda create -n deepclustering python=3.10 -y
 conda activate deepclustering
-
+pip install -r requirements.txt
 ```
 
 Third, run the code. Take the DEC as a example.
@@ -45,7 +45,7 @@ python
 ## Contact
 If you have any questions or suggestions while using our code, please feel free to contact us via the following ways. Our response will be sent to you quickly.
 
-:point_right: Submit an issue in the GitHub repository.
+:point_right: Submit an issue in the GitHub repository with [link](https://github.com/zhoushengisnoob/OpenDeepClustering/issues).
 
 :email: Send us a email: [rencailgb@gmail.com](mailto:rencailgb@gmail.com)
 

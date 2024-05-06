@@ -1,0 +1,10 @@
+easydict==1.13
+faiss==1.8.0
+joblib==1.4.0
+matplotlib==3.8.4
+munkres==1.1.4
+PyYAML==6.0.1
+scikit_learn==1.4.2
+torch==2.1.2
+torchvision==0.16.2
+tqdm==4.66.2
