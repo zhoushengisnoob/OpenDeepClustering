@@ -54,14 +54,21 @@ pip install -r requirements.txt
 ```
 
 ## :rocket:Quick start
-
-
-Third, run the code. Take the DEC as a example.
+(Recommend way)
+Please modify the configuration files in the `configs` packages before running the codes. 
+- The `base.yaml` contains the basic experiment settings for all the methods.
+- A yaml file with a similar naming format like `DEC.yaml` contains the specific hyper parameters.
 ```
-python 
+cd OpenDeepClustering
+# if pretrain is need
+python -u models/Simultaneous/DEC/pretrain.py
+python -u models/Simultaneous/DEC/main.py
 ```
 
-
+## Implementation Results
+|Model |Backbone | MNIST | STL10  | CIFAR10  |
+| ----------------------------------------------------- |---- |------------ | ------------------ | ----- |
+| [DEC](https://proceedings.mlr.press/v48/xieb16.pdf) | / | - | - | - |
 
 ## Citation
 :smiley:Our paper is posted on arXiv: [A comprehensive survey on deep clustering: Taxonomy, challenges, and future directions](https://arxiv.org/abs/2206.07579). 
