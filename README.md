@@ -1,6 +1,9 @@
 ![# Open Deep Clustering](pic/deepclustering-logo.png)
 [![GitHub Repo stars](https://img.shields.io/github/stars/zhoushengisnoob/OpenDeepClustering)](https://github.com/zhoushengisnoob/OpenDeepClustering/stargazers)
-# OpenDeepClustering
+[![GitHub Code License](https://img.shields.io/github/license/zhoushengisnoob/OpenDeepClustering)](LICENSE)
+[![GitHub last commit](https://img.shields.io/github/last-commit/zhoushengisnoob/OpenDeepClustering)](https://github.com/zhoushengisnoob/OpenDeepClustering/commits/main)
+[![Citation](https://img.shields.io/badge/citation-67-green)](#projects-using-open-deep-clustering)
+[![GitHub pull request](https://img.shields.io/badge/PRs-welcome-blue)](https://github.com/zhoushengisnoob/OpenDeepClustering/pulls)
 ## About
 Hello :wave:, we are a team of researchers from the Eagle-Lab(InnovativE SoftwAre TechnoloGy DeveLopment CentEr), Zhejiang University.
 
