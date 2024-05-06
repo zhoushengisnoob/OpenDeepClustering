@@ -12,4 +12,9 @@
 ```
 
 ## Contact
-:email:If you have any questions, please feel free to contact me via email: [rencailgb@gmail.com](mailto:rencailgb@gmail.com)
+If you have any questions or suggestions while using our code, please feel free to contact us via the following ways. Our response will be sent to you quickly.
+
+:point_right: Submit an issue in the GitHub repository.
+
+:email:Send us a email: [rencailgb@gmail.com](mailto:rencailgb@gmail.com)
+
