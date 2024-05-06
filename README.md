@@ -1,21 +1,23 @@
+[![GitHub Repo stars](https://img.shields.io/github/stars/zhoushengisnoob/OpenDeepClustering)](https://github.com/zhoushengisnoob/OpenDeepClustering/stargazers)
 # OpenDeepClustering
 ## About
-Hello:wave:, we are a team of researchers from the Eagle-Lab(InnovativE SoftwAre TechnoloGy DeveLopment CentEr), Zhejiang University.
+Hello :wave:, we are a team of researchers from the Eagle-Lab(InnovativE SoftwAre TechnoloGy DeveLopment CentEr), Zhejiang University.
 
 We are dedicated to making deep clustering more accessible and efficient. Our code is open-source and we welcome contributions from the community.
 ![Deep Clustering](pic/deepclustering-logo.png)
 
-## Usage
-First, clone this repository.
+## Installation
+Step-1, clone this repository.
 ```
 git clone https://github.com/zhoushengisnoob/OpenDeepClustering.git
 cd OpenDeepClustering
 ```
 
-Second, we highly recommend that you create a new conda environment.
+Step-2, create a new conda environment and download the dependencies.
 ```
-conda create -n deepclustering python=3.10
+conda create -n deepclustering python=3.10 -y
 conda activate deepclustering
+
 ```
 
 Third, run the code. Take the DEC as a example.
