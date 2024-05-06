@@ -69,6 +69,8 @@ python -u models/Simultaneous/DEC/main.py
 ```sh
 
 ```
+> [!IMPORTANT]
+> Please be sure to make `OpenDeepClustering` as the working directory.
 
 ## Implementation Results
 |Model |Backbone | MNIST | STL10  | CIFAR10  |
