@@ -55,21 +55,22 @@ pip install -r requirements.txt
 
 ## :rocket:Quick start
 > [!IMPORTANT]
-> Please be sure to make `OpenDeepClustering` as the working directory.
+> Please be sure to make `OpenDeepClustering` as the working directory if you want to run the code.
 
-(Recommend way)
+**(Recommend way)**
 Please modify the configuration files in the `configs` packages before running the codes. 
 - The `base.yaml` contains the basic experiment settings for all the methods.
 - A yaml file with a similar naming format like `DEC.yaml` contains the specific hyper parameters.
 ```sh
 cd OpenDeepClustering
 # if pretrain is need
-python -u models/Simultaneous/DEC/pretrain.py
-python -u models/Simultaneous/DEC/main.py
+python models/Simultaneous/DEC/pretrain.py
+python models/Simultaneous/DEC/main.py
 ```
 
 (Alternative way) Please refer to the `scripts` packages for direct running script with default settings.
 ```sh
+cd OpenDeepClustering
 bash scripts/dec.sh
 ```
 
