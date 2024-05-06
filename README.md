@@ -1,9 +1,16 @@
 ![# Open Deep Clustering](pic/deepclustering-logo.png)
+<p align="center">
+  <a href="#about">Overview</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#citation">Citation</a> 
+</p>
+
 [![GitHub Repo stars](https://img.shields.io/github/stars/zhoushengisnoob/OpenDeepClustering)](https://github.com/zhoushengisnoob/OpenDeepClustering/stargazers)
 [![GitHub Code License](https://img.shields.io/github/license/zhoushengisnoob/OpenDeepClustering)](LICENSE)
 [![GitHub last commit](https://img.shields.io/github/last-commit/zhoushengisnoob/OpenDeepClustering)](https://github.com/zhoushengisnoob/OpenDeepClustering/commits/main)
 [![Citation](https://img.shields.io/badge/citation-67-green)](#projects-using-open-deep-clustering)
 [![GitHub pull request](https://img.shields.io/badge/PRs-welcome-blue)](https://github.com/zhoushengisnoob/OpenDeepClustering/pulls)
+
 ## About
 Hello :wave:, we are a team of researchers from the Eagle-Lab(InnovativE SoftwAre TechnoloGy DeveLopment CentEr), Zhejiang University.
 
@@ -24,6 +31,9 @@ conda activate deepclustering
 pip install -r requirements.txt
 ```
 
+## 🚀Quick start
+
+
 Third, run the code. Take the DEC as a example.
 ```
 python 
@@ -31,7 +41,7 @@ python
 
 
 
-## Reference
+## Citation
 :smiley:Our paper is posted on arXiv: [A comprehensive survey on deep clustering: Taxonomy, challenges, and future directions](https://arxiv.org/abs/2206.07579). 
 ```
 @article{zhou2022comprehensive,
