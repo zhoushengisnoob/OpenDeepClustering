@@ -16,5 +16,5 @@ If you have any questions or suggestions while using our code, please feel free 
 
 :point_right: Submit an issue in the GitHub repository.
 
-:email:Send us a email: [rencailgb@gmail.com](mailto:rencailgb@gmail.com)
+:email: Send us a email: [rencailgb@gmail.com](mailto:rencailgb@gmail.com)
 
