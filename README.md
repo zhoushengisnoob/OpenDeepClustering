@@ -6,7 +6,7 @@ We are dedicated to making deep clustering more accessible and efficient. Our co
 ![Deep Clustering](pic/deepclustering-logo.png)
 
 ## Usage
-First, you could clone this repository.
+First, clone this repository.
 ```
 git clone https://github.com/zhoushengisnoob/OpenDeepClustering.git
 cd OpenDeepClustering
