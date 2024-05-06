@@ -18,7 +18,7 @@ The primary purpose of clustering is to assign the instances into groups so that
 ### Why deep clustering?
 Although shallow clustering methods like KMeans have achieved tremendous success, they can no longer be directly applied to deal with high-dimension or complicated unstructured data like images. 
 
-Deep Clustering, which aims at joint optimization of deep representation learning and clustering, arises and has attracted increasing attention recently in the community.
+**Deep Clustering**, which aims at joint optimization of deep representation learning and clustering, arises and has attracted increasing attention recently in the community.
 
 ## :dart:News
 [24/05/06] We have already implemented **10+ algorithms** which can be classified into four categories (Generative, Iterative, MultiStage, Simultaneous) locally. These algorithms will be uploaded soon after rigorous testing. **If you find this repository useful for you studies, please star it** :star:.
@@ -41,13 +41,13 @@ Deep Clustering, which aims at joint optimization of deep representation learnin
 
 ## Installation
 Step-1, clone this repository.
-```
+```sh
 git clone https://github.com/zhoushengisnoob/OpenDeepClustering.git
 cd OpenDeepClustering
 ```
 
 Step-2, create a new conda environment and download the dependencies.
-```
+```sh
 conda create -n deepclustering python=3.10 -y
 conda activate deepclustering
 pip install -r requirements.txt
@@ -58,11 +58,16 @@ pip install -r requirements.txt
 Please modify the configuration files in the `configs` packages before running the codes. 
 - The `base.yaml` contains the basic experiment settings for all the methods.
 - A yaml file with a similar naming format like `DEC.yaml` contains the specific hyper parameters.
-```
+```sh
 cd OpenDeepClustering
 # if pretrain is need
 python -u models/Simultaneous/DEC/pretrain.py
 python -u models/Simultaneous/DEC/main.py
+```
+
+(Alternative way) Please refer to the `scripts` packages for direct running script with default settings.
+```sh
+
 ```
 
 ## Implementation Results
