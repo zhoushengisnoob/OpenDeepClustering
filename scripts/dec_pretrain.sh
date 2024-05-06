@@ -16,4 +16,4 @@ nohup python -u models/Simultaneous/DEC/pretrain.py \
     --verbose True \
     --save_step 5000 \
     --dims 500 500 2000 10 \
-    >./logs/mnist_dec.log &
+    >./logs/mnist_dec_pretrain.log &
