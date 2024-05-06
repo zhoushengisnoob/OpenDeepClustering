@@ -89,6 +89,7 @@ def init(config_type="yaml", config_file=None, parser=None):
     args = parser.parse_args()
     init_seed(args.seed)
     init_device(args.device, args.cuda_visible_devices)
+    
     return args
 
 

@@ -7,9 +7,10 @@ License: BSD 2 clause
 """
 
 import os
-import time
 import sys
-sys.path.append('./')
+
+sys.path.append("./")
+import time
 
 import torch
 
@@ -356,6 +357,9 @@ class PretrainSAE:
 
 
 args = init(config_file=["configs/base.yaml", "configs/DEC.yaml"])
+args.log_dir = f"{args.log_dir}/{args.dataset_name}/{args.method_name}/pretrain"
+args.model_dir = f"{args.model_dir}/{args.dataset_name}/{args.method_name}/pretrain"
+args.pretrain_path = f"{args.model_dir}/ckpt_50000.pt"
 save_param(log_dir=args.log_dir, param_dict=vars(args), file_name="pretrain_params.txt")
 writer = SummaryWriter(log_dir=args.log_dir)
 
@@ -372,7 +376,7 @@ train_X = train_X.reshape(len(trainset), -1)
 in_dim = train_X.shape[1]
 Pretrainer = PretrainSAE(
     in_dim=in_dim,
-    dims=[500, 500, 2000, 10],
+    dims=args.dims,
     optimizer_name=args.optimizer,
     learning_rate=args.lr,
     momentum=args.sgd_momentum,
@@ -382,5 +386,7 @@ Pretrainer = PretrainSAE(
     log_dir=args.log_dir,
     model_dir=args.model_dir,
     writer=writer,
+    verbose=args.verbose,
+    save_step=args.save_step,
 )
 Pretrainer.pretrain(train_X)

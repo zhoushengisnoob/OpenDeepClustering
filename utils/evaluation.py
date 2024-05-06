@@ -7,11 +7,10 @@ License: BSD 2 clause
 
 import numpy as np
 
-from sklearn.metrics import accuracy_score as acc_score
 from sklearn.metrics import adjusted_rand_score as ari_score
-from sklearn.metrics import f1_score
 from sklearn.metrics import normalized_mutual_info_score as nmi_score
-
+from sklearn.metrics import f1_score
+from sklearn.metrics import accuracy_score as acc_score
 
 from munkres import Munkres, make_cost_matrix
 

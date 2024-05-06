@@ -1,6 +1,6 @@
 # pretrain settings
 dims:
-  type: list
+  type: list_int
   default:
     - 500
     - 500
@@ -10,5 +10,10 @@ dims:
 
 pretrain_path:
   type: str
-  default: "OpenDeepClustering/model_saves/ckpt_50000.pt"
+  default: "./model_saves/MNIST/DEC/pretrain/ckpt_50000.pt"
   help: "The path to store the pretrain model."
+
+method_name:
+  type: str
+  default: "DEC"
+  help: "The method name."

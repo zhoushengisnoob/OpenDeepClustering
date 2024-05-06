@@ -16,7 +16,7 @@ device:
   help: "Choose cuda or cpu."
 
 cuda_visible_devices:
-  type: list
+  type: list_str
   default:
     - "0"
     - "1"
@@ -36,12 +36,12 @@ data_parallel:
 cuda_parallel_devices:
   type: list
   default:
-    # - "0"
-    # - "1"
-    # - "2"
-    # - "3"
-    # - "4"
-    # - "5"
+    - "0"
+    - "1"
+    - "2"
+    - "3"
+    - "4"
+    - "5"
     - "6"
     - "7"
   help: "Cuda parallel devices."
@@ -49,7 +49,7 @@ cuda_parallel_devices:
 # dataset & dataloader settings
 dataset_dir:
   type: str
-  default: "~/dataset"
+  default: "~/dataset/"
   help: "Directory of dataset."
 
 dataset_name:
@@ -68,27 +68,17 @@ grey:
   help: "Whether the dataset is grey images."
 
 img_size_at:
-  type: tuple
+  type: list_int
   default:
     - 64
     - 64
   help: "Image size after transformation."
-
-num_workers:
-  type: int
-  default: 32
-  help: "Number of workers for data loading."
 
 # optimizer settings
 # optimizer:
 #   type: str
 #   default: "SGD"
 #   help: "Name of optimizer."
-
-# sgd_momentum:
-#   type: float
-#   default: 0.9
-#   help: "Momentum for SGD optimizer."
 
 optimizer:
   type: str
@@ -105,6 +95,11 @@ adam_beta2:
   default: 0.999
   help: "Beta2 for Adam optimizer."
 
+sgd_momentum:
+  type: float
+  default: 0.9
+  help: "Momentum for SGD optimizer."
+
 lr:
   type: float
   default: 0.4
@@ -120,6 +115,11 @@ batch_size:
   type: int
   default: 256
   help: "Batch size."
+
+num_workers:
+  type: int
+  default: 32
+  help: "Number of workers for data loading."
 
 start_epoch:
   type: int

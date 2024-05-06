@@ -8,6 +8,19 @@ License: BSD 2 clause
 import argparse
 import yaml
 
+define_type_list = ["list_str", "list_int"]
+
+
+def to_int(value):
+    return int(value)
+
+
+def to_bool(value):
+    if str(value).lower() == "true":
+        return True
+    else:
+        return False
+
 
 def load_config(config_type="yaml", config_file="configs/base.yaml", parser=None):
     """
@@ -40,15 +53,39 @@ def load_config(config_type="yaml", config_file="configs/base.yaml", parser=None
         if isinstance(items, dict):
             arg_name = "--" + str(key)
             arg_type = items.get("type", None)
-            arg_type = eval(arg_type) if arg_type is not None else arg_type
             arg_default = items.get("default", None)
-            arg_default = (
-                arg_type(arg_default) if arg_default is not None else arg_default
-            )
             arg_help = items.get("help", None)
-            parser.add_argument(
-                arg_name, type=arg_type, default=arg_default, help=arg_help
-            )
+
+            arg_type_clone = str(arg_type)
+            if arg_type_clone not in define_type_list:
+                arg_type = eval(arg_type) if arg_type is not None else arg_type
+                arg_default = (
+                    arg_type(arg_default) if arg_default is not None else arg_default
+                )
+
+            if arg_type_clone == "list_str":
+                parser.add_argument(
+                    arg_name,
+                    default=[str(item) for item in arg_default],
+                    nargs="+",
+                    help=arg_help,
+                )
+            elif arg_type_clone == "list_int":
+                parser.add_argument(
+                    arg_name,
+                    type=to_int,
+                    default=[int(item) for item in arg_default],
+                    nargs="+",
+                    help=arg_help,
+                )
+            elif arg_type_clone == "bool":
+                parser.add_argument(
+                    arg_name, type=to_bool, default=to_bool(arg_default), help=arg_help
+                )
+            else:
+                parser.add_argument(
+                    arg_name, type=arg_type, default=arg_default, help=arg_help
+                )
 
         else:
             parser.add_argument(
@@ -72,7 +109,7 @@ def load_config_list(
         The configuration file list.
     parser : argparse.ArgumentParser | None
         The module simplifies command-line argument handling.
-    
+
     Returns
     -------
     parser : argparse.ArgumentParser
