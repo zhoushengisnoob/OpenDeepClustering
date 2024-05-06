@@ -20,10 +20,24 @@ Although shallow clustering methods like KMeans have achieved tremendous success
 
 Deep Clustering, which aims at joint optimization of deep representation learning and clustering, arises and has attracted increasing attention recently in the community.
 
+## :dart:News
+[24/05/06] We have already implemented **10+ algorithms** which can be classified into four categories (Generative, Iterative, MultiStage, Simultaneous) locally. These algorithms will be uploaded soon after rigorous testing. **If you find this repository useful for you studies, please star it**.
+
 ## Supported Models
-| Model | Taxonomy     | Clustering Module  | Type  |
-| -     | -            | -                  | -     |
-| [DEC](https://proceedings.mlr.press/v48/xieb16.pdf)   | Simultaneous | Auto-encoder based | Image |
+| Model                                                 | Taxonomy     | Clustering Module  | Type  |
+| ----------------------------------------------------- | ------------ | ------------------ | ----- |
+| <center>[DEC](https://proceedings.mlr.press/v48/xieb16.pdf)</center> | <center>Simultaneous</center> | <center>Auto-encoder based</center> | <center>Image</center> |
+| <center>update soon</center>                          | <center>...</center> | <center>...</center> | <center>...</center> |
+
+
+## Supported Dataset
+|Dataset                                                 | Classes     | Gray  | Type  |
+| ----------------------------------------------------- | ------------ | ------------------ | ----- |
+| <center>[MNIST](https://pytorch.org/vision/stable/generated/torchvision.datasets.MNIST.html#mnist)</center> | <center>10</center> | <center>:white_check_mark:</center> | <center>Image</center> |
+| <center>[STL10](https://pytorch.org/vision/stable/generated/torchvision.datasets.STL10.html?highlight=stl10#torchvision.datasets.STL10)</center> | <center>10</center> | <center>:negative_squared_cross_mark:</center> | <center>Image</center> |
+| <center>[CIFAR10](https://pytorch.org/vision/stable/generated/torchvision.datasets.CIFAR10.html#cifar10)</center> | <center>10</center> | <center>:negative_squared_cross_mark:	</center> | <center>Image</center> |
+| <center>[CIFAR100](https://pytorch.org/vision/stable/generated/torchvision.datasets.CIFAR100.html?highlight=cifar100#torchvision.datasets.CIFAR100)</center> | <center>100</center> | <center>:negative_squared_cross_mark:	</center> | <center>Image</center> |
+| <center>update soon</center>                          | <center>...</center> | <center>...</center> | <center>...</center> |
 
 ## Installation
 Step-1, clone this repository.
@@ -39,7 +53,7 @@ conda activate deepclustering
 pip install -r requirements.txt
 ```
 
-## 🚀Quick start
+## :rocket:Quick start
 
 
 Third, run the code. Take the DEC as a example.
