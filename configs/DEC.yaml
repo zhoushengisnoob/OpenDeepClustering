@@ -1,0 +1,14 @@
+# pretrain settings
+dims:
+  type: list
+  default:
+    - 500
+    - 500
+    - 2000
+    - 10
+  help: "The dimension of auto encoder."
+
+pretrain_path:
+  type: str
+  default: "OpenDeepClustering/model_saves/ckpt_50000.pt"
+  help: "The path to store the pretrain model."

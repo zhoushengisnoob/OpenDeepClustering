@@ -1,0 +1,181 @@
+# experiment settings
+seed:
+  type: int
+  default: 2024
+  help: "Random seed for everything."
+
+reuse:
+  type: bool
+  default: False
+  help: "Whether to reuse the training model."
+
+# CUDA (cpu, single_gpu, multiple_gpus) settings
+device:
+  type: str
+  default: "cuda"
+  help: "Choose cuda or cpu."
+
+cuda_visible_devices:
+  type: list
+  default:
+    - "0"
+    - "1"
+    - "2"
+    - "3"
+    - "4"
+    - "5"
+    - "6"
+    - "7"
+  help: "Cuda visible devices."
+
+data_parallel:
+  type: bool
+  default: False
+  help: "Whether to use data parallel modal."
+
+cuda_parallel_devices:
+  type: list
+  default:
+    # - "0"
+    # - "1"
+    # - "2"
+    # - "3"
+    # - "4"
+    # - "5"
+    - "6"
+    - "7"
+  help: "Cuda parallel devices."
+
+# dataset & dataloader settings
+dataset_dir:
+  type: str
+  default: "~/dataset"
+  help: "Directory of dataset."
+
+dataset_name:
+  type: str
+  default: "CIFAR10"
+  help: "Name of dataset."
+
+class_num:
+  type: int
+  default: 10
+  help: "Number of classes."
+
+grey:
+  type: bool
+  default: False
+  help: "Whether the dataset is grey images."
+
+img_size_at:
+  type: tuple
+  default:
+    - 64
+    - 64
+  help: "Image size after transformation."
+
+num_workers:
+  type: int
+  default: 32
+  help: "Number of workers for data loading."
+
+# optimizer settings
+# optimizer:
+#   type: str
+#   default: "SGD"
+#   help: "Name of optimizer."
+
+# sgd_momentum:
+#   type: float
+#   default: 0.9
+#   help: "Momentum for SGD optimizer."
+
+optimizer:
+  type: str
+  default: "Adam"
+  help: "Name of optimizer."
+
+adam_beta1:
+  type: float
+  default: 0.5
+  help: "Beta1 for Adam optimizer."
+
+adam_beta2:
+  type: float
+  default: 0.999
+  help: "Beta2 for Adam optimizer."
+
+lr:
+  type: float
+  default: 0.4
+  help: "Initial learning rate."
+
+weight_decay:
+  type: float
+  default: 0.0001
+  help: "Weight decay."
+
+# training settings
+batch_size:
+  type: int
+  default: 256
+  help: "Batch size."
+
+start_epoch:
+  type: int
+  default: 1
+  help: "Starting epoch."
+
+epochs:
+  type: int
+  default: 1000
+  help: "Number of epochs."
+
+# evaluation settings
+eval_batch_size:
+  type: int
+  default: 128
+  help: "Batch size for evaluation."
+
+eval_step:
+  type: int
+  default: 1
+  help: "Evaluate model every eval_step steps."
+
+# log settings
+log_dir:
+  type: str
+  default: "./logs"
+  help: "Directory of log."
+
+verbose:
+  type: bool
+  default: False
+  help: "Whether to print log to console."
+
+# save settings
+save_step:
+  type: int
+  default: 10
+  help: "Save model every save_step steps."
+
+model_dir:
+  type: str
+  default: "./model_saves"
+  help: "Directory of saved models."
+
+# vision backbone settings
+use_vision:
+  type: bool
+  default: True
+  help: "Whether to use vision backbone."
+
+backbone:
+  type: str
+  default: "resnet18"
+  help: "Backbone of vision."
+
+pretrained:
+  type: bool
+  default: True
+  help: "Whether to use pretrained backbone."

@@ -6,16 +6,24 @@ We are dedicated to making deep clustering more accessible and efficient. Our co
 ![Deep Clustering](pic/deepclustering-logo.png)
 
 ## Usage
-We highly recommend that you create a new conda environment firstly.
+First, you could clone this repository.
+```
+git clone https://github.com/zhoushengisnoob/OpenDeepClustering.git
+cd OpenDeepClustering
+```
+
+Second, we highly recommend that you create a new conda environment.
 ```
 conda create -n deepclustering python=3.10
 conda activate deepclustering
 ```
 
-Then, install the dependencies.
+Third, run the code. Take the DEC as a example.
 ```
-wating for update
+python 
 ```
+
+
 
 ## Reference
 :smiley:Our paper is posted on arXiv: [A comprehensive survey on deep clustering: Taxonomy, challenges, and future directions](https://arxiv.org/abs/2206.07579). 
