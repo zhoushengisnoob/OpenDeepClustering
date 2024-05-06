@@ -1,4 +1,9 @@
 # OpenDeepClustering
+## About
+Hello:wave:, we are a team of researchers from the Eagle-Lab(InnovativE SoftwAre TechnoloGy DeveLopment CentEr), Zhejiang University.
+
+We are dedicated to making deep clustering more accessible and efficient. Our code is open-source and we welcome contributions from the community.
+![Deep Clustering](pic/deepclustering-logo.png)
 
 ## Reference
 :smiley:Our paper is posted on arXiv: [A comprehensive survey on deep clustering: Taxonomy, challenges, and future directions](https://arxiv.org/abs/2206.07579). 
