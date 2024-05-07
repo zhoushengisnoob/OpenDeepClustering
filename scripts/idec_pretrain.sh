@@ -16,7 +16,7 @@ nohup python -u models/Simultaneous/IDEC/pretrain.py \
     --verbose True \
     --save_step 5000 \
     --dims 500 500 2000 10 \
-    >./exps/mnist/dec/pretrain.log &
+    >./exps/mnist/idec/pretrain.log &
 
 # nohup python -u models/Simultaneous/IDEC/pretrain.py \
 #     --dataset_name STL10 \
@@ -34,7 +34,7 @@ nohup python -u models/Simultaneous/IDEC/pretrain.py \
 #     --verbose True \
 #     --save_step 5000 \
 #     --dims 500 500 2000 10 \
-#     >./exps/stl10/dec/pretrain.log &
+#     >./exps/stl10/idec/pretrain.log &
 
 # nohup python -u models/Simultaneous/IDEC/pretrain.py \
 #     --dataset_name CIFAR10 \
@@ -52,4 +52,4 @@ nohup python -u models/Simultaneous/IDEC/pretrain.py \
 #     --verbose True \
 #     --save_step 5000 \
 #     --dims 500 500 2000 10 \
-#     >./exps/cifar10/dec/pretrain.log &
+#     >./exps/cifar10/idec/pretrain.log &

@@ -20,7 +20,7 @@ nohup python -u models/Simultaneous/IDEC/main.py \
     --eval_step 20 \
     --save_step 20 \
     --dims 500 500 2000 10 \
-    >./exps/mnist/dec/finetuing.log &
+    >./exps/mnist/idec/finetuing.log &
 
 # nohup python -u models/Simultaneous/IDEC/main.py \
 #     --reuse True \
@@ -43,7 +43,7 @@ nohup python -u models/Simultaneous/IDEC/main.py \
 #     --save_step 20 \
 #     --dims 500 500 2000 10 \
 #     --pretrain_path ~/download/OpenDeepClustering/model_saves/STL10/DEC/pretrain/ckpt_105000.pt \
-#     >./exps/stl10/dec/finetuing.log &
+#     >./exps/stl10/idec/finetuing.log &
 
 # nohup python -u models/Simultaneous/IDEC/main.py \
 #     --reuse True \
@@ -66,4 +66,4 @@ nohup python -u models/Simultaneous/IDEC/main.py \
 #     --save_step 20 \
 #     --dims 500 500 2000 10 \
 #     --pretrain_path ~/download/OpenDeepClustering/model_saves/CIFAR10/DEC/pretrain/ckpt_100000.pt \
-#     >./exps/cifar10/dec/finetuing.log &
+#     >./exps/cifar10/idec/finetuing.log &
