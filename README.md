@@ -56,6 +56,15 @@ pip install -r requirements.txt
 ## :rocket:Quick start
 > [!IMPORTANT]
 > Please be sure to make `OpenDeepClustering` as the working directory if you want to run the code.
+> log will be saved in `./logs/datasetname/methodname/trainingtype/`, model will be saved in `./model_saves/datasetname/methodname/trainingtype/`, and nohup files will be saved in `./exps/datasetname/methodname/trainingtype/`.
+
+**(Recommend way)**
+Please modify the configuration files in the `configs` packages before running the codes. 
+- The `base.yaml` contains the basic experiment settings for all the methods.
+- A yaml file with a similar naming format like `DEC.yaml` contains the specific hyper parameters.
+```sh
+cd OpenDeepClustering
+python models/Simultaneous/DEC/pretrain.py
 
 **(Recommend way)**
 Please modify the configuration files in the `configs` packages before running the codes. 
