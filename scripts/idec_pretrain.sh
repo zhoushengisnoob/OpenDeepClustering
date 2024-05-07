@@ -1,6 +1,6 @@
 # mnist
 # please be sure to let class num equal to the last element of dims
-nohup python -u models/Simultaneous/DEC/pretrain.py \
+nohup python -u models/Simultaneous/IDEC/pretrain.py \
     --dataset_name MNIST \
     --dataset_dir ~/dataset \
     --class_num 10 \
@@ -18,7 +18,7 @@ nohup python -u models/Simultaneous/DEC/pretrain.py \
     --dims 500 500 2000 10 \
     >./exps/mnist/dec/pretrain.log &
 
-# nohup python -u models/Simultaneous/DEC/pretrain.py \
+# nohup python -u models/Simultaneous/IDEC/pretrain.py \
 #     --dataset_name STL10 \
 #     --dataset_dir ~/dataset \
 #     --class_num 10 \
@@ -36,7 +36,7 @@ nohup python -u models/Simultaneous/DEC/pretrain.py \
 #     --dims 500 500 2000 10 \
 #     >./exps/stl10/dec/pretrain.log &
 
-# nohup python -u models/Simultaneous/DEC/pretrain.py \
+# nohup python -u models/Simultaneous/IDEC/pretrain.py \
 #     --dataset_name CIFAR10 \
 #     --dataset_dir ~/dataset \
 #     --class_num 10 \

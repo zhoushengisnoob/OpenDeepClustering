@@ -1,6 +1,6 @@
 # mnist
 # please be sure to let class num equal to the last element of dims
-nohup python -u models/Simultaneous/DEC/main.py \
+nohup python -u models/Simultaneous/IDEC/main.py \
     --reuse True \
     --dataset_name MNIST \
     --dataset_dir ~/dataset \
@@ -22,7 +22,7 @@ nohup python -u models/Simultaneous/DEC/main.py \
     --dims 500 500 2000 10 \
     >./exps/mnist/dec/finetuing.log &
 
-# nohup python -u models/Simultaneous/DEC/main.py \
+# nohup python -u models/Simultaneous/IDEC/main.py \
 #     --reuse True \
 #     --dataset_name STL10 \
 #     --dataset_dir ~/dataset \
@@ -45,7 +45,7 @@ nohup python -u models/Simultaneous/DEC/main.py \
 #     --pretrain_path ~/download/OpenDeepClustering/model_saves/STL10/DEC/pretrain/ckpt_105000.pt \
 #     >./exps/stl10/dec/finetuing.log &
 
-# nohup python -u models/Simultaneous/DEC/main.py \
+# nohup python -u models/Simultaneous/IDEC/main.py \
 #     --reuse True \
 #     --dataset_name CIFAR10 \
 #     --dataset_dir ~/dataset \
