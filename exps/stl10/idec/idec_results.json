@@ -1,0 +1,12 @@
+{
+    "dataset": "STL10",
+    "class_num": 10,
+    "model": "IDEC",
+    "optimizer": "sgd",
+    "epoch": 130,
+    "acc": 0.2674,
+    "traning_type": "finetuing",
+    "f1": 0.25695411850150907,
+    "nmi": 0.17707244107575595,
+    "ari": 0.08866641895823714
+}

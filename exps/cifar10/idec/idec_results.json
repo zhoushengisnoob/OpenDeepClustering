@@ -1,0 +1,12 @@
+{
+    "dataset": "CIFAR10",
+    "class_num": 10,
+    "model": "IDEC",
+    "optimizer": "sgd",
+    "epoch": 10,
+    "acc": 0.21186,
+    "traning_type": "finetuing",
+    "f1": 0.14963248990253386,
+    "nmi": 0.08535342899460856,
+    "ari": 0.05359725220959724
+}
