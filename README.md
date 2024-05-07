@@ -23,7 +23,7 @@ Although shallow clustering methods like KMeans have achieved tremendous success
 ## :dart:News
 [24/05/06] We have already implemented **10+ algorithms** which can be classified into four categories (Generative, Iterative, MultiStage, Simultaneous) locally. These algorithms will be uploaded soon after rigorous testing. **If you find this repository useful for you studies, please star it** :star:.
 
-[24/05/07] We have added the DEC algorithm to our repository.
+[24/05/07] We have added the DEC and IDEC algorithms to our repository.
 
 ## Supported Models
 | Model                                                 | Taxonomy     | Clustering Module  | Type  | GPU Memory |
@@ -106,6 +106,7 @@ nohup python -u models/Simultaneous/DEC/pretrain.py \
 | ----------------------------------------------------- |---- |------------ | ------------------ | ----- |
 | [DEC](https://proceedings.mlr.press/v48/xieb16.pdf) | / | 69.79% | 26.56% | 21.13% |
 |[IDEC](https://www.researchgate.net/profile/Xifeng-Guo/publication/317095655_Improved_Deep_Embedded_Clustering_with_Local_Structure_Preservation/links/59263224458515e3d4537edc/Improved-Deep-Embedded-Clustering-with-Local-Structure-Preservation.pdf)| /| 69.31% | 26.60% | 21.19%|
+|update soon| ... | ... | ... | ...|
 
 ## Citation
 :smiley:Our paper is posted on arXiv: [A comprehensive survey on deep clustering: Taxonomy, challenges, and future directions](https://arxiv.org/abs/2206.07579). 
