@@ -10,7 +10,7 @@ dims:
 
 pretrain_path:
   type: str
-  default: "./model_saves/MNIST/DEC/pretrain/ckpt_50000.pt"
+  default: "./model_saves/MNIST/DEC/pretrain/ckpt_100000.pt"
   help: "The path to store the pretrain model."
 
 method_name:

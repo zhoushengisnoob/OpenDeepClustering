@@ -116,7 +116,7 @@ def save_model(save_model_dir, ckpt, iteration_num):
     torch.save(ckpt, full_path)
 
 
-def save_json(save_dir, param_dict, file_name="param_dict.json"):
+def save_json(save_dir, param_dict, file_name="important_results.json"):
     """
     Function saves the important info using json format.
 

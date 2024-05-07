@@ -359,7 +359,7 @@ class PretrainSAE:
 args = init(config_file=["configs/base.yaml", "configs/DEC.yaml"])
 args.log_dir = f"{args.log_dir}/{args.dataset_name}/{args.method_name}/pretrain"
 args.model_dir = f"{args.model_dir}/{args.dataset_name}/{args.method_name}/pretrain"
-args.pretrain_path = f"{args.model_dir}/ckpt_50000.pt"
+args.pretrain_path = f"{args.model_dir}/ckpt_100000.pt"
 save_param(log_dir=args.log_dir, param_dict=vars(args), file_name="pretrain_params.txt")
 writer = SummaryWriter(log_dir=args.log_dir)
 

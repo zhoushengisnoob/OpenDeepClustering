@@ -8,9 +8,11 @@ License: BSD 2 clause
 
 import datetime
 import sys
-sys.path.append('./')
+
+sys.path.append("./")
 import time
 
+import json
 import numpy as np
 import torch
 
@@ -25,7 +27,13 @@ from clustering import Clustering, Loss
 from data.cv_dataset import load_torchvision_dataset
 from utils.init_env import init, init_optimizer, init_backbone
 from utils.evaluation import eva
-from utils.log_save import save_param, save_train_details, save_eva_details, save_model
+from utils.log_save import (
+    save_param,
+    save_train_details,
+    save_eva_details,
+    save_model,
+    save_json,
+)
 
 
 class DEC(nn.Module):
@@ -155,6 +163,9 @@ class DEC(nn.Module):
 
 args = init(config_file=["configs/base.yaml", "configs/DEC.yaml"])
 args.img_size_at = (28, 28)
+args.log_dir = f"{args.log_dir}/{args.dataset_name}/{args.method_name}/finetuing"
+args.model_dir = f"{args.model_dir}/{args.dataset_name}/{args.method_name}/finetuing"
+
 save_param(log_dir=args.log_dir, param_dict=vars(args))
 writer = SummaryWriter(log_dir=args.log_dir)
 
@@ -207,6 +218,15 @@ optimizer = init_optimizer(
     params=model.parameters(),
     sgd_momentum=args.sgd_momentum,
 )
+best_acc = -1
+important_info = dict()
+important_info["dataset"] = args.dataset_name
+important_info["class_num"] = args.class_num
+important_info["model"] = args.method_name
+important_info["optimizer"] = args.optimizer
+important_info["epoch"] = -1
+important_info["acc"] = best_acc
+important_info["traning_type"] = "finetuing"
 for epoch in range(args.start_epoch, args.epochs + 1):
     model.train()
     total_examples = 0
@@ -285,6 +305,29 @@ for epoch in range(args.start_epoch, args.epochs + 1):
         if args.verbose:
             print("Evaluate the model is over...\n")
             print(eval_details)
+        if best_acc < acc:
+            best_acc = acc
+            important_info["acc"] = best_acc
+            important_info["f1"] = f1
+            important_info["nmi"] = nmi
+            important_info["ari"] = ari
+            important_info["epoch"] = epoch
+            save_json(args.logs_dir, important_info)
+            current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            model_size = 0
+            for param in model.parameters():
+                if param.requires_grad:
+                    model_size += param.data.nelement()
+            ckpt = {
+                "current_time": current_time,
+                "args": vars(args),
+                "iteration_num": epoch,
+                "model_size": "{:.2f} MB".format(model_size / 1024 / 1024),
+                "net_model": model.state_dict(),
+                "lr": optimizer.param_groups[0]["lr"],
+                "optimizer": optimizer.state_dict(),
+            }
+            save_model(args.model_dir, ckpt, epoch)
 
     if epoch % args.save_step == 0:
         if args.verbose:
