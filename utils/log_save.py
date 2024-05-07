@@ -7,6 +7,7 @@ License: BSD 2 clause
 
 import os
 import datetime
+import json
 import torch
 
 
@@ -113,3 +114,27 @@ def save_model(save_model_dir, ckpt, iteration_num):
         os.makedirs(save_model_dir)
     full_path = os.path.join(save_model_dir, "ckpt_%d.pt" % iteration_num)
     torch.save(ckpt, full_path)
+
+
+def save_json(save_dir, param_dict, file_name="param_dict.json"):
+    """
+    Function saves the important info using json format.
+
+    Parameters
+    ----------
+    save_dir : str
+        The directory.
+    param_dict : dict
+        The important info.
+    file_name : str
+        The specific files.
+
+    Returns
+    -------
+    None
+    """
+    if os.path.exists(save_dir) is False:
+        os.makedirs(save_dir)
+    full_path = os.path.join(save_dir, file_name)
+    with open(full_path, "w") as f:
+        json.dump(param_dict, f, indent=4)
