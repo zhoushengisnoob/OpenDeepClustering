@@ -74,6 +74,7 @@ class DEC(nn.Module):
         pretrain=True,
         pretrain_path=None,
         device_name="cuda",
+        reuse="True",
     ):
         super(DEC, self).__init__()
         self.in_dim = in_dim
@@ -85,6 +86,7 @@ class DEC(nn.Module):
         self.pretrain = pretrain
         self.pretrain_path = pretrain_path
         self.device = device_name
+        self.reuse = reuse
 
     def init_pretrain(self, x):
         """
@@ -101,7 +103,8 @@ class DEC(nn.Module):
         """
         state_dict = torch.load(self.pretrain_path)
         representation = StackedAutoEncoder(self.in_dim).autoencoder
-        representation.load_state_dict(state_dict["net_model"])
+        if self.reuse:
+            representation.load_state_dict(state_dict["net_model"])
         self.representaion = representation[0].to(self.device)
 
         self.representaion.eval()
@@ -207,6 +210,7 @@ model = DEC(
     n_clusters=args.class_num,
     pretrain_path=args.pretrain_path,
     device_name=args.device,
+    reuse=args.reuse,
 ).to(args.device)
 
 model.init_pretrain(train_X)
@@ -311,7 +315,7 @@ for epoch in range(args.start_epoch, args.epochs + 1):
             important_info["nmi"] = nmi
             important_info["ari"] = ari
             important_info["epoch"] = epoch
-            save_json(args.logs_dir, important_info)
+            save_json(args.log_dir, important_info)
             current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             model_size = 0
             for param in model.parameters():
