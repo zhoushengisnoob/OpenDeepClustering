@@ -1,6 +1,6 @@
 # mnist
 # please be sure to let class num equal to the last element of dims
-nohup python -u models/Simultaneous/DEC/pretrain.py \
+nohup python -u models/Simultaneous/DEC/main.py \
     --dataset_name MNIST \
     --dataset_dir ~/dataset \
     --class_num 10 \
@@ -16,4 +16,4 @@ nohup python -u models/Simultaneous/DEC/pretrain.py \
     --verbose True \
     --save_step 5000 \
     --dims 500 500 2000 10 \
-    >./exps/mnist/dec/finetuing.log &
+    >./exps/mnist/dec/pretrain.log &
