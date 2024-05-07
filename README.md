@@ -28,18 +28,19 @@ Although shallow clustering methods like KMeans have achieved tremendous success
 ## Supported Models
 | Model                                                 | Taxonomy     | Clustering Module  | Type  | GPU Memory |
 | ----------------------------------------------------- | ------------ | ------------------ | ----- | ---|
-| <center>[DEC](https://proceedings.mlr.press/v48/xieb16.pdf)</center> | <center>Simultaneous</center> | <center>Auto-encoder based</center> | <center>Image</center> |<center>3G</center>|
-| <center>update soon</center>                          | <center>...</center> | <center>...</center> | <center>...</center> | <center>...</center> 
+| [DEC](https://proceedings.mlr.press/v48/xieb16.pdf) | Simultaneous | Auto-encoder based | Image |3G|
+[IDEC](https://www.researchgate.net/profile/Xifeng-Guo/publication/317095655_Improved_Deep_Embedded_Clustering_with_Local_Structure_Preservation/links/59263224458515e3d4537edc/Improved-Deep-Embedded-Clustering-with-Local-Structure-Preservation.pdf)|Simultaneous | Auto-encoder based | Image |3G|
+| update soon                          | ... | ... | ... | ... 
 
 
 ## Supported Dataset
 |Dataset                                                 | Classes     | RGB  | Type  | Shape|
 | ----------------------------------------------------- | ------------ | ------------------ | ----- | ----|
-| <center>[MNIST](https://pytorch.org/vision/stable/generated/torchvision.datasets.MNIST.html#mnist)</center> | <center>10</center> | <center>:negative_squared_cross_mark:</center> | <center>Image</center> | 28 * 28 |
-| <center>[STL10](https://pytorch.org/vision/stable/generated/torchvision.datasets.STL10.html?highlight=stl10#torchvision.datasets.STL10)</center> | <center>10</center> | <center>:white_check_mark:</center> | <center>Image</center> | 96 * 96 |
-| <center>[CIFAR10](https://pytorch.org/vision/stable/generated/torchvision.datasets.CIFAR10.html#cifar10)</center> | <center>10</center> | <center>:white_check_mark:	</center> | <center>Image</center> | 32 * 32 |
-| <center>[CIFAR100](https://pytorch.org/vision/stable/generated/torchvision.datasets.CIFAR100.html?highlight=cifar100#torchvision.datasets.CIFAR100)</center> | <center>100</center> | <center>:white_check_mark:	</center> | <center>Image</center> |
-| <center>update soon</center>                          | <center>...</center> | <center>...</center> | <center>...</center> |<center>...</center>
+| [MNIST](https://pytorch.org/vision/stable/generated/torchvision.datasets.MNIST.html#mnist) | 10 | :negative_squared_cross_mark: | Image | 28 * 28 |
+| [STL10](https://pytorch.org/vision/stable/generated/torchvision.datasets.STL10.html?highlight=stl10#torchvision.datasets.STL10) | 10 | :white_check_mark: | Image | 96 * 96 |
+| [CIFAR10](https://pytorch.org/vision/stable/generated/torchvision.datasets.CIFAR10.html#cifar10) | 10 | :white_check_mark:	 | Image | 32 * 32 |
+| [CIFAR100](https://pytorch.org/vision/stable/generated/torchvision.datasets.CIFAR100.html?highlight=cifar100#torchvision.datasets.CIFAR100) | 100 | :white_check_mark:	 | Image |
+| update soon                          | ... | ... | ... |...
 
 ## Installation
 Step-1, clone this repository.
@@ -104,6 +105,7 @@ nohup python -u models/Simultaneous/DEC/pretrain.py \
 |Model |Backbone | MNIST | STL10  | CIFAR10  |
 | ----------------------------------------------------- |---- |------------ | ------------------ | ----- |
 | [DEC](https://proceedings.mlr.press/v48/xieb16.pdf) | / | 69.79% | 26.56% | 21.13% |
+|[IDEC](https://www.researchgate.net/profile/Xifeng-Guo/publication/317095655_Improved_Deep_Embedded_Clustering_with_Local_Structure_Preservation/links/59263224458515e3d4537edc/Improved-Deep-Embedded-Clustering-with-Local-Structure-Preservation.pdf)| /| % |% | %|
 
 ## Citation
 :smiley:Our paper is posted on arXiv: [A comprehensive survey on deep clustering: Taxonomy, challenges, and future directions](https://arxiv.org/abs/2206.07579). 
