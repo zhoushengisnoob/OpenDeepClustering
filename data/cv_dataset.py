@@ -44,7 +44,10 @@ def load_torchvision_dataset(dataset_name, dataset_dir, train=True, transform=No
         )
     elif dataset_name.lower() == "stl10":
         # modal = "train" if train else "test"
-        modal = train
+        if type(train) ==bool:
+            modal = "train" if train else "test"
+        elif type(train) ==str:
+            modal = train
         dataset = torchvision.datasets.STL10(
             root=dataset_dir, split=modal, transform=transform, download=True
         )
