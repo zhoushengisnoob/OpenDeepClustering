@@ -31,13 +31,13 @@ Although shallow clustering methods like KMeans have achieved tremendous success
 
 
 ## Supported Dataset
-|Dataset                                                 | Classes     | Gray  | Type  |
-| ----------------------------------------------------- | ------------ | ------------------ | ----- |
-| <center>[MNIST](https://pytorch.org/vision/stable/generated/torchvision.datasets.MNIST.html#mnist)</center> | <center>10</center> | <center>:white_check_mark:</center> | <center>Image</center> |
-| <center>[STL10](https://pytorch.org/vision/stable/generated/torchvision.datasets.STL10.html?highlight=stl10#torchvision.datasets.STL10)</center> | <center>10</center> | <center>:negative_squared_cross_mark:</center> | <center>Image</center> |
-| <center>[CIFAR10](https://pytorch.org/vision/stable/generated/torchvision.datasets.CIFAR10.html#cifar10)</center> | <center>10</center> | <center>:negative_squared_cross_mark:	</center> | <center>Image</center> |
+|Dataset                                                 | Classes     | Gray  | Type  | Shape|
+| ----------------------------------------------------- | ------------ | ------------------ | ----- | ----|
+| <center>[MNIST](https://pytorch.org/vision/stable/generated/torchvision.datasets.MNIST.html#mnist)</center> | <center>10</center> | <center>:white_check_mark:</center> | <center>Image</center> | 28 * 28 |
+| <center>[STL10](https://pytorch.org/vision/stable/generated/torchvision.datasets.STL10.html?highlight=stl10#torchvision.datasets.STL10)</center> | <center>10</center> | <center>:negative_squared_cross_mark:</center> | <center>Image</center> | 96 * 96 |
+| <center>[CIFAR10](https://pytorch.org/vision/stable/generated/torchvision.datasets.CIFAR10.html#cifar10)</center> | <center>10</center> | <center>:negative_squared_cross_mark:	</center> | <center>Image</center> | 32 * 32 |
 | <center>[CIFAR100](https://pytorch.org/vision/stable/generated/torchvision.datasets.CIFAR100.html?highlight=cifar100#torchvision.datasets.CIFAR100)</center> | <center>100</center> | <center>:negative_squared_cross_mark:	</center> | <center>Image</center> |
-| <center>update soon</center>                          | <center>...</center> | <center>...</center> | <center>...</center> |
+| <center>update soon</center>                          | <center>...</center> | <center>...</center> | <center>...</center> |<center>...</center>
 
 ## Installation
 Step-1, clone this repository.
@@ -101,7 +101,7 @@ nohup python -u models/Simultaneous/DEC/pretrain.py \
 ## Implementation Results
 |Model |Backbone | MNIST | STL10  | CIFAR10  |
 | ----------------------------------------------------- |---- |------------ | ------------------ | ----- |
-| [DEC](https://proceedings.mlr.press/v48/xieb16.pdf) | / | 69.79% | - | - |
+| [DEC](https://proceedings.mlr.press/v48/xieb16.pdf) | / | 69.79% | 26.56% | - |
 
 ## Citation
 :smiley:Our paper is posted on arXiv: [A comprehensive survey on deep clustering: Taxonomy, challenges, and future directions](https://arxiv.org/abs/2206.07579). 
