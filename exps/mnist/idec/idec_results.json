@@ -1,0 +1,12 @@
+{
+    "dataset": "MNIST",
+    "class_num": 10,
+    "model": "IDEC",
+    "optimizer": "sgd",
+    "epoch": 20,
+    "acc": 0.6931666666666667,
+    "traning_type": "finetuing",
+    "f1": 0.6912949386767352,
+    "nmi": 0.6571481444444793,
+    "ari": 0.550813540909253
+}
