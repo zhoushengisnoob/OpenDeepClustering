@@ -93,7 +93,9 @@ nohup python -u models/Simultaneous/DEC/pretrain.py \
     >./exps/mnist/dec/pretrain.log &
 ```
 > [!TIP]
-> log will be saved in `./logs/datasetname/methodname/trainingtype/`, model will be saved in `./model_saves/datasetname/methodname/trainingtype/`, and nohup files will be saved in `./exps/datasetname/methodname/trainingtype`.
+> - log will be saved in `./logs/datasetname/methodname/trainingtype/`.
+>  - model will be saved in `./model_saves/datasetname/methodname/trainingtype/`.
+> - nohup files will be saved in `./exps/datasetname/methodname/trainingtype`.
 
 
 ## Implementation Results
