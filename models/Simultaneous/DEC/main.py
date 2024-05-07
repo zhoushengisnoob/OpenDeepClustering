@@ -165,7 +165,6 @@ class DEC(nn.Module):
 
 
 args = init(config_file=["configs/base.yaml", "configs/DEC.yaml"])
-args.img_size_at = (28, 28)
 args.log_dir = f"{args.log_dir}/{args.dataset_name}/{args.method_name}/finetuing"
 args.model_dir = f"{args.model_dir}/{args.dataset_name}/{args.method_name}/finetuing"
 save_param(log_dir=args.log_dir, param_dict=vars(args))
