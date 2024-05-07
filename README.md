@@ -93,9 +93,9 @@ nohup python -u models/Simultaneous/DEC/pretrain.py \
     >./exps/mnist/dec/pretrain.log &
 ```
 > [!TIP]
-> - log will be saved in `./logs/datasetname/methodname/trainingtype/`.
->  - model will be saved in `./model_saves/datasetname/methodname/trainingtype/`.
-> - nohup files will be saved in `./exps/datasetname/methodname/trainingtype`.
+> - log will be saved in `./logs/datasetname/methodname/trainingtype/`
+>  - model will be saved in `./model_saves/datasetname/methodname/trainingtype/`
+> - nohup files will be saved in `./exps/datasetname/methodname/trainingtype`
 
 
 ## Implementation Results
@@ -119,7 +119,7 @@ If you have any questions or suggestions while using our code, please feel free 
 
 :point_right: Submit an issue in the GitHub repository with [link](https://github.com/zhoushengisnoob/OpenDeepClustering/issues).
 
-:email: Send us a email: [rencailgb@gmail.com](mailto:rencailgb@gmail.com)
+<!-- :email: Send us a email: [rencailgb@gmail.com](mailto:rencailgb@gmail.com) -->
 
 ## Star History
 ![Star History Chart](https://api.star-history.com/svg?repos=zhoushengisnoob/OpenDeepClustering&type=Date)
