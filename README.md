@@ -24,10 +24,10 @@ Although shallow clustering methods like KMeans have achieved tremendous success
 [24/05/06] We have already implemented **10+ algorithms** which can be classified into four categories (Generative, Iterative, MultiStage, Simultaneous) locally. These algorithms will be uploaded soon after rigorous testing. **If you find this repository useful for you studies, please star it** :star:.
 
 ## Supported Models
-| Model                                                 | Taxonomy     | Clustering Module  | Type  |
-| ----------------------------------------------------- | ------------ | ------------------ | ----- |
-| <center>[DEC](https://proceedings.mlr.press/v48/xieb16.pdf)</center> | <center>Simultaneous</center> | <center>Auto-encoder based</center> | <center>Image</center> |
-| <center>update soon</center>                          | <center>...</center> | <center>...</center> | <center>...</center> |
+| Model                                                 | Taxonomy     | Clustering Module  | Type  | GPU Memory |
+| ----------------------------------------------------- | ------------ | ------------------ | ----- | ---|
+| <center>[DEC](https://proceedings.mlr.press/v48/xieb16.pdf)</center> | <center>Simultaneous</center> | <center>Auto-encoder based</center> | <center>Image</center> |<center>3G</center>|
+| <center>update soon</center>                          | <center>...</center> | <center>...</center> | <center>...</center> | <center>...</center> 
 
 
 ## Supported Dataset
