@@ -1,0 +1,12 @@
+{
+    "dataset": "MNIST",
+    "class_num": 10,
+    "model": "DEC",
+    "optimizer": "sgd",
+    "epoch": 20,
+    "acc": 0.6979833333333333,
+    "traning_type": "finetuing",
+    "f1": 0.6951704013138597,
+    "nmi": 0.6618947209426552,
+    "ari": 0.5559191818070696
+}

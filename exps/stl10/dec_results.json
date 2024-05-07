@@ -1,0 +1,12 @@
+{
+    "dataset": "STL10",
+    "class_num": 10,
+    "model": "DEC",
+    "optimizer": "sgd",
+    "epoch": 10,
+    "acc": 0.2656,
+    "traning_type": "finetuing",
+    "f1": 0.2609519973036818,
+    "nmi": 0.17623563915211185,
+    "ari": 0.08242201444351209
+}
