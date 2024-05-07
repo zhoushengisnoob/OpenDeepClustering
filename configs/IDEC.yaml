@@ -17,3 +17,8 @@ gamma:
   type: float
   default: 0.1
   help: "The gamma of the reconstruction loss."
+
+method_name:
+  type: str
+  default: "IDEC"
+  help: "The method name."
