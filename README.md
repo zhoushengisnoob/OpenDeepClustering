@@ -103,7 +103,7 @@ nohup python -u models/Simultaneous/DEC/pretrain.py \
 ## Implementation Results
 |Model |Backbone | MNIST | STL10  | CIFAR10  |
 | ----------------------------------------------------- |---- |------------ | ------------------ | ----- |
-| [DEC](https://proceedings.mlr.press/v48/xieb16.pdf) | / | 69.79% | 26.56% | - |
+| [DEC](https://proceedings.mlr.press/v48/xieb16.pdf) | / | 69.79% | 26.56% | 21.13% |
 
 ## Citation
 :smiley:Our paper is posted on arXiv: [A comprehensive survey on deep clustering: Taxonomy, challenges, and future directions](https://arxiv.org/abs/2206.07579). 
