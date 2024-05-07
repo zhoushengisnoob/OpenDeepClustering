@@ -42,7 +42,7 @@ nohup python -u models/Simultaneous/IDEC/main.py \
 #     --eval_step 10 \
 #     --save_step 20 \
 #     --dims 500 500 2000 10 \
-#     --pretrain_path ~/download/OpenDeepClustering/model_saves/STL10/DEC/pretrain/ckpt_105000.pt \
+#     --pretrain_path ./model_saves/STL10/IDEC/pretrain/ckpt_105000.pt \
 #     >./exps/stl10/idec/finetuing.log &
 
 # nohup python -u models/Simultaneous/IDEC/main.py \
@@ -65,5 +65,5 @@ nohup python -u models/Simultaneous/IDEC/main.py \
 #     --eval_step 10 \
 #     --save_step 20 \
 #     --dims 500 500 2000 10 \
-#     --pretrain_path ~/download/OpenDeepClustering/model_saves/CIFAR10/DEC/pretrain/ckpt_100000.pt \
+#     --pretrain_path ./model_saves/CIFAR10/IDEC/pretrain/ckpt_100000.pt \
 #     >./exps/cifar10/idec/finetuing.log &
