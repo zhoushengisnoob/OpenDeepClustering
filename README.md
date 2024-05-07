@@ -85,7 +85,7 @@ nohup python -u models/Simultaneous/DEC/pretrain.py \
     --weight_decay 0 \
     --sgd_momentum 0.9 \
     --use_vision False \
-    --batch_size 512 \
+    --batch_size 256 \
     --num_workers 16 \
     --verbose True \
     --save_step 5000 \
