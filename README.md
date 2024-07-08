@@ -8,7 +8,7 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/zhoushengisnoob/OpenDeepClustering)](https://github.com/zhoushengisnoob/OpenDeepClustering/stargazers)
 [![GitHub Code License](https://img.shields.io/github/license/zhoushengisnoob/OpenDeepClustering)](LICENSE)
 [![GitHub last commit](https://img.shields.io/github/last-commit/zhoushengisnoob/OpenDeepClustering)](https://github.com/zhoushengisnoob/OpenDeepClustering/commits/main)
-[![Citation](https://img.shields.io/badge/citation-67-green)](#projects-using-open-deep-clustering)
+[![Citation](https://img.shields.io/badge/citation-78-green)](#projects-using-open-deep-clustering)
 [![GitHub pull request](https://img.shields.io/badge/PRs-welcome-blue)](https://github.com/zhoushengisnoob/OpenDeepClustering/pulls)
 
 ## About
