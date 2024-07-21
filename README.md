@@ -25,7 +25,7 @@ Although shallow clustering methods like KMeans have achieved tremendous success
 
 [24/05/07] We have added the DEC and IDEC algorithms to our repository.
 
-[24/07/21] We
+[24/07/21] We will update
 
 ## Supported Models
 | Model                                                 | Taxonomy     | Clustering Module  | Type  | GPU Memory |
