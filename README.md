@@ -21,6 +21,8 @@ Although shallow clustering methods like KMeans have achieved tremendous success
 **Deep Clustering**, which aims at joint optimization of deep representation learning and clustering, arises and has attracted increasing attention recently in the community.
 
 ## :dart:News
+[26/05/13] We are refactoring OpenDeepClustering toward a scikit-learn style Python package, with unified `fit`, `predict`, `fit_predict`, and `transform` interfaces. The next updates will focus on wrapping representative methods from our survey taxonomy into reusable estimators for both researchers and non-CS users.
+
 [24/05/06] We have already implemented **10+ algorithms** which can be classified into four categories (Generative, Iterative, MultiStage, Simultaneous) locally. These algorithms will be uploaded soon after rigorous testing. **If you find this repository useful for you studies, please star it** :star:.
 
 [24/05/07] We have added the DEC and IDEC algorithms to our repository.
@@ -56,11 +58,30 @@ Step-2, create a new conda environment and download the dependencies.
 conda create -n deepclustering python=3.10 -y
 conda activate deepclustering
 pip install -r requirements.txt
+pip install -e .
 ```
 
 ## :rocket:Quick start
 > [!IMPORTANT]
 > Please be sure to make `OpenDeepClustering` as the working directory if you want to run the code.
+
+### Package API
+OpenDeepClustering now provides a scikit-learn style API for users who want to call
+deep clustering methods from their own Python code.
+
+```python
+from opendeepclustering import DEC, IDEC
+
+model = DEC(n_clusters=10, pretrain_epochs=50, max_epochs=100)
+labels = model.fit_predict(X)
+embeddings = model.transform(X)
+probabilities = model.predict_proba(X)
+```
+
+The first package-level estimators are `DEC` and `IDEC`, both organized under the
+`Simultaneous` taxonomy from our deep clustering survey. Inputs can be NumPy-like
+arrays, pandas data frames, or PyTorch tensors. Image tensors with shape
+`(n_samples, channels, height, width)` are flattened automatically.
 
 **(Recommend way)**
 Please modify the configuration files in the `configs` packages before running the codes. 
