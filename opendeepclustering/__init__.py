@@ -1,5 +1,7 @@
 """User-facing API for OpenDeepClustering."""
 
+from importlib.metadata import version as _distribution_version
+
 from opendeepclustering.estimators import (
     AutoencoderKMeans,
     DEC,
@@ -9,7 +11,10 @@ from opendeepclustering.estimators import (
 )
 from opendeepclustering.metrics import ClusteringScores, evaluate_clustering
 
+__version__ = _distribution_version("opendeepclustering")
+
 __all__ = [
+    "__version__",
     "AutoencoderKMeans",
     "ClusteringScores",
     "DEC",
