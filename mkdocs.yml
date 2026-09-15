@@ -23,6 +23,7 @@ nav:
   - Reproducible benchmarks: benchmarking.md
   - Benchmark records:
       - Current baseline: benchmarks/current-baseline.md
+      - Four-pattern smoke (2026-09-15): benchmarks/four-pattern-smoke-2026-09-15.md
       - MNIST reference (2026-09-15): benchmarks/mnist-reference-2026-09-15.md
   - Architecture:
       - Estimator contract: architecture/estimator-contract.md
