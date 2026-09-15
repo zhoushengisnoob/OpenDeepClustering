@@ -1,0 +1,28 @@
+estimator: DEC
+seeds: [0, 1, 2, 3, 4]
+dataset:
+  kind: mnist
+  root: ../../datasets
+  download: false
+  split: all
+  normalization: dec
+parameters:
+  n_clusters: 10
+  dims: [500, 500, 2000, 10]
+  alpha: 1.0
+  pretrain_method: greedy
+  layerwise_pretrain_epochs: 50
+  pretrain_epochs: 100
+  pretrain_optimizer: sgd
+  pretrain_lr: 0.1
+  corruption: 0.2
+  optimizer: sgd
+  lr: 0.01
+  momentum: 0.9
+  max_epochs: 200
+  update_interval: 140
+  batch_size: 256
+  tol: 0.001
+  deterministic: true
+  device: cuda
+output: ../../benchmark_outputs/dec_mnist_reference.json

@@ -9,11 +9,19 @@ description = "Scikit-learn style deep clustering estimators based on the OpenDe
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "munkres",
-    "numpy",
-    "scikit-learn",
-    "torch",
+    "numpy>=1.23,<2",
+    "PyYAML>=6",
+    "scikit-learn>=1.2",
+    "scipy>=1.9",
+    "torch>=2.0",
 ]
+
+[project.optional-dependencies]
+benchmark = ["torchvision>=0.15"]
+test = ["pytest>=7"]
+
+[project.scripts]
+odc = "opendeepclustering.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["opendeepclustering*"]
