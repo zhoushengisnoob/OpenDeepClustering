@@ -61,8 +61,11 @@ def _check_wheel(path: Path) -> None:
         )
     required = {
         "opendeepclustering/__init__.py",
+        "opendeepclustering/estimators/autoencoder_kmeans.py",
         "opendeepclustering/estimators/dec.py",
+        "opendeepclustering/estimators/deepcluster.py",
         "opendeepclustering/estimators/idec.py",
+        "opendeepclustering/estimators/vade.py",
     }
     missing = required.difference(names)
     if missing:

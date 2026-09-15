@@ -1,0 +1,18 @@
+estimator: AutoencoderKMeans
+seeds: [0, 1, 2, 3, 4]
+dataset:
+  kind: mnist
+  root: ../../datasets
+  download: false
+  split: all
+  normalization: unit
+parameters:
+  n_clusters: 10
+  dims: [500, 500, 2000, 10]
+  max_epochs: 50
+  batch_size: 256
+  lr: 0.001
+  n_init: 20
+  deterministic: true
+  device: cuda
+output: ../../benchmark_outputs/autoencoder_kmeans_mnist_reference.json

@@ -17,11 +17,23 @@ import torch
 import yaml
 from sklearn.datasets import make_blobs
 
-from opendeepclustering.estimators import DEC, IDEC
+from opendeepclustering.estimators import (
+    AutoencoderKMeans,
+    DEC,
+    DeepCluster,
+    IDEC,
+    VaDE,
+)
 from opendeepclustering.metrics import evaluate_clustering
 
 
-ESTIMATORS = {"DEC": DEC, "IDEC": IDEC}
+ESTIMATORS = {
+    "AutoencoderKMeans": AutoencoderKMeans,
+    "DEC": DEC,
+    "DeepCluster": DeepCluster,
+    "IDEC": IDEC,
+    "VaDE": VaDE,
+}
 
 
 def _validate_config(config):
@@ -79,7 +91,7 @@ def _load_dataset(config, config_dir: Path):
     else:
         raise ValueError(f"Unsupported dataset kind: {kind!r}.")
 
-    X = np.asarray(X, dtype=np.float32).reshape(len(X), -1)
+    X = np.asarray(X, dtype=np.float32)
     subset_size = config.get("subset_size")
     if subset_size is not None:
         if not isinstance(subset_size, int) or not 0 < subset_size <= len(X):
@@ -87,7 +99,23 @@ def _load_dataset(config, config_dir: Path):
         rng = np.random.default_rng(config.get("subset_seed", 0))
         indices = rng.choice(len(X), size=subset_size, replace=False)
         X, y = X[indices], np.asarray(y)[indices]
+    reshape = config.get("reshape")
+    if reshape is not None:
+        if (
+            not isinstance(reshape, list)
+            or not reshape
+            or any(not isinstance(size, int) or size <= 0 for size in reshape)
+            or int(np.prod(reshape)) != int(np.prod(X.shape[1:]))
+        ):
+            raise ValueError("reshape must be a positive shape preserving sample size.")
+        X = X.reshape(len(X), *reshape)
+    if config.get("flatten", True):
+        X = X.reshape(len(X), -1)
+    elif X.ndim == 3:
+        X = X[:, None, :, :]
     if config.get("normalization") == "dec":
+        if X.ndim != 2:
+            raise ValueError("DEC normalization requires flattened samples.")
         scale = np.sqrt(np.mean(np.square(X), axis=1, keepdims=True)).clip(1e-12)
         X = X / scale
     elif config.get("normalization") == "unit":
@@ -187,7 +215,8 @@ def run_benchmark(config_path: str | Path):
         "environment": _environment(),
         "dataset": {
             "samples": len(X),
-            "features": X.shape[1],
+            "features": int(np.prod(X.shape[1:])),
+            "sample_shape": list(X.shape[1:]),
             "features_sha256": _array_sha256(X),
             "labels_sha256": _array_sha256(y),
         },

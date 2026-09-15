@@ -1,7 +1,11 @@
 import torch
 from torch.nn import functional as F
 
-from opendeepclustering.components import StudentTClustering, target_distribution
+from opendeepclustering.components import (
+    GaussianMixturePrior,
+    StudentTClustering,
+    target_distribution,
+)
 
 
 def test_target_distribution_uses_global_cluster_frequencies():
@@ -31,3 +35,13 @@ def test_kl_loss_is_p_log_p_over_q():
     expected = (p * (p.log() - q.log())).sum() / len(p)
     actual = F.kl_div(q.log(), p, reduction="batchmean")
     torch.testing.assert_close(actual, expected)
+
+
+def test_gaussian_mixture_prior_normalizes_and_has_zero_identity_kl():
+    prior = GaussianMixturePrior(n_clusters=1, latent_dim=2)
+    prior.initialize(weights=[1.0], means=[[0.0, 0.0]], variances=[[1.0, 1.0]])
+    mean = torch.zeros(3, 2)
+    log_variance = torch.zeros(3, 2)
+    kl, responsibilities = prior.expected_kl(mean, log_variance)
+    torch.testing.assert_close(kl, torch.zeros(3), atol=1e-6, rtol=1e-6)
+    torch.testing.assert_close(responsibilities, torch.ones(3, 1))

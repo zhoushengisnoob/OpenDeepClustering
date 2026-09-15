@@ -28,6 +28,8 @@ Dependencies are installed separately by the Python package manager and are not 
 
 FAISS, EasyDict, Matplotlib, Joblib and tqdm were present in the historical requirements file but are not direct dependencies of the installable package. They were removed from the authoritative package metadata. Transitive dependencies remain governed by their own licenses.
 
+The Autoencoder + KMeans, DeepCluster and VaDE estimators were newly written in this repository from the published method descriptions and survey taxonomy. No third-party implementation code was copied. Their method specification pages link the primary papers and distinguish reproduced semantics from modern practical alternatives.
+
 ## Contribution rule
 
 New algorithms must record whether their implementation is original, adapted, or vendored. Adapted or vendored material requires an exact source URL or revision, a compatible license, preservation of required notices, and a note describing the changes. See [CONTRIBUTING.md](https://github.com/zhoushengisnoob/OpenDeepClustering/blob/master/CONTRIBUTING.md) for the contributor workflow.

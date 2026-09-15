@@ -25,7 +25,7 @@ Estimators accept a finite, dense, two-dimensional array shaped `(n_samples, n_f
 
 ```python
 from sklearn.datasets import make_blobs
-from opendeepclustering import DEC
+from opendeepclustering import AutoencoderKMeans
 
 X, _ = make_blobs(
     n_samples=300,
@@ -34,10 +34,9 @@ X, _ = make_blobs(
     random_state=7,
 )
 
-model = DEC(
+model = AutoencoderKMeans(
     n_clusters=3,
     dims=(32, 10),
-    pretrain_epochs=5,
     max_epochs=10,
     random_state=7,
     deterministic=True,
@@ -45,10 +44,10 @@ model = DEC(
 )
 labels = model.fit_predict(X)
 embedding = model.transform(X)
-assignments = model.soft_assign(X)
+predictions = model.predict(X)
 ```
 
-Fitted estimators expose `labels_`, `embedding_`, `cluster_centers_`, `n_iter_`, `converged_`, `stop_reason_` and `history_`.
+Fitted estimators expose `labels_`, `embedding_`, `cluster_centers_`, `n_iter_`, `converged_`, `stop_reason_` and `history_`. Soft assignments are method-specific; DEC, IDEC and VaDE provide them, while `AutoencoderKMeans` and DeepCluster expose hard predictions.
 
 ## Reproducible CLI
 

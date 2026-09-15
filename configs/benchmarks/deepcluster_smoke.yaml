@@ -1,0 +1,25 @@
+estimator: DeepCluster
+seeds: [7]
+dataset:
+  kind: blobs
+  params:
+    n_samples: 120
+    n_features: 64
+    centers: 3
+    cluster_std: 0.8
+    random_state: 7
+  reshape: [1, 8, 8]
+  flatten: false
+  normalization: unit
+parameters:
+  n_clusters: 3
+  hidden_dim: 16
+  embedding_dim: 4
+  rounds: 1
+  epochs_per_round: 1
+  batch_size: 32
+  n_init: 3
+  augment: true
+  deterministic: true
+  device: cpu
+output: ../../benchmark_outputs/deepcluster_smoke.json

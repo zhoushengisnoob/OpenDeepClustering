@@ -1,0 +1,23 @@
+estimator: DeepCluster
+seeds: [0, 1, 2, 3, 4]
+dataset:
+  kind: mnist
+  root: ../../datasets
+  download: false
+  split: all
+  flatten: false
+  normalization: unit
+parameters:
+  n_clusters: 10
+  hidden_dim: 64
+  embedding_dim: 32
+  rounds: 20
+  epochs_per_round: 1
+  batch_size: 256
+  lr: 0.05
+  n_init: 20
+  augment: true
+  augmentation_noise: 0.01
+  deterministic: true
+  device: cuda
+output: ../../benchmark_outputs/deepcluster_mnist_reference.json

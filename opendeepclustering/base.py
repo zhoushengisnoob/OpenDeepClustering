@@ -26,8 +26,20 @@ class DeepClusterMixin(ClusterMixin, TransformerMixin, BaseEstimator, ABC):
     """
 
     taxonomy: str
+    input_modalities: tuple[str, ...] = ("tabular",)
     supports_predict: bool = True
     supports_soft_assignment: bool = False
+    supports_sample: bool = False
+
+    def get_capabilities(self) -> dict[str, Any]:
+        """Return declared, pre-fit capabilities for discovery and documentation."""
+        return {
+            "taxonomy": self.taxonomy,
+            "input_modalities": self.input_modalities,
+            "predict": self.supports_predict,
+            "soft_assignment": self.supports_soft_assignment,
+            "sample": self.supports_sample,
+        }
 
     def _validate_X(self, X: Any, *, reset: bool) -> np.ndarray:
         """Validate dense array-like input and return a 2D float32 matrix."""
