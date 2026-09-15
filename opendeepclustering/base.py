@@ -11,6 +11,11 @@ from scipy import sparse
 from sklearn.base import BaseEstimator, ClusterMixin, TransformerMixin
 from sklearn.utils.validation import check_is_fitted
 
+try:
+    from sklearn.utils.validation import validate_data
+except ImportError:  # scikit-learn < 1.6
+    validate_data = None
+
 
 class DeepClusterMixin(ClusterMixin, TransformerMixin, BaseEstimator, ABC):
     """Thin public contract shared by OpenDeepClustering estimators.
@@ -38,16 +43,18 @@ class DeepClusterMixin(ClusterMixin, TransformerMixin, BaseEstimator, ABC):
                 "for image-like arrays or a method-specific Dataset adapter."
             )
 
-        return self._validate_data(
-            array,
-            reset=reset,
-            accept_sparse=False,
-            ensure_2d=True,
-            allow_nd=False,
-            dtype=np.float32,
-            ensure_min_samples=1,
-            ensure_min_features=1,
-        )
+        options = {
+            "reset": reset,
+            "accept_sparse": False,
+            "ensure_2d": True,
+            "allow_nd": False,
+            "dtype": np.float32,
+            "ensure_min_samples": 1,
+            "ensure_min_features": 1,
+        }
+        if validate_data is not None:
+            return validate_data(self, array, **options)
+        return self._validate_data(array, **options)
 
     def __sklearn_is_fitted__(self) -> bool:
         return hasattr(self, "model_") and hasattr(self, "labels_")
@@ -70,3 +77,13 @@ class DeepClusterMixin(ClusterMixin, TransformerMixin, BaseEstimator, ABC):
             "requires_y": False,
             "poor_score": True,
         }
+
+    def __sklearn_tags__(self):
+        """Expose native tags on scikit-learn 1.6+ while retaining 1.2 support."""
+        parent = super()
+        if not hasattr(parent, "__sklearn_tags__"):
+            return self._more_tags()
+        tags = parent.__sklearn_tags__()
+        tags.input_tags.sparse = False
+        tags.input_tags.allow_nan = False
+        return tags
