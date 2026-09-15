@@ -1,0 +1,19 @@
+include CITATION.cff
+include CONTRIBUTING.md
+include LICENSE
+include README.md
+include mkdocs.yml
+include pyproject.toml
+recursive-include configs/benchmarks *.yaml
+recursive-include docs *.md
+recursive-include pic *.png
+recursive-include tests *.py
+recursive-include tools *.py
+prune benchmark_outputs
+prune data
+prune exps
+prune models
+prune scripts
+prune utils
+global-exclude __pycache__
+global-exclude *.py[cod]
