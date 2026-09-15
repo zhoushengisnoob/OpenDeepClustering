@@ -23,6 +23,15 @@ class SeedManager:
         del worker_id
         np.random.seed(torch.initial_seed() % 2**32)
 
+    def __getstate__(self):
+        return {"seed": self.seed, "numpy_state": self.numpy.bit_generator.state}
+
+    def __setstate__(self, state):
+        self.seed = state["seed"]
+        self.numpy = np.random.default_rng()
+        self.numpy.bit_generator.state = state["numpy_state"]
+        self.torch = torch.Generator(device="cpu").manual_seed(self.seed)
+
     @contextmanager
     def torch_fork(self, device: torch.device, *, deterministic: bool = False):
         devices = []

@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import pytest
+import pickle
 from sklearn.base import clone
 from sklearn.exceptions import NotFittedError
 
@@ -150,3 +151,18 @@ def test_image_inputs_require_explicit_adapter():
         DEC(n_clusters=2, dims=(2,), pretrain_epochs=0, max_epochs=0).fit(
             np.zeros((4, 2, 2), dtype=np.float32)
         )
+
+
+def test_fitted_estimator_is_pickleable():
+    X = make_data()
+    model = DEC(
+        n_clusters=2,
+        dims=(4, 2),
+        pretrain_epochs=0,
+        max_epochs=0,
+        n_init=1,
+        random_state=0,
+        device="cpu",
+    ).fit(X)
+    restored = pickle.loads(pickle.dumps(model))
+    np.testing.assert_array_equal(restored.predict(X), model.predict(X))
