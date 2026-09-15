@@ -4,6 +4,7 @@ dataset:
   kind: mnist
   root: ../../datasets
   download: false
+  split: all
   normalization: dec
 parameters:
   n_clusters: 10

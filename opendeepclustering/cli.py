@@ -67,12 +67,26 @@ def _load_dataset(config, config_dir: Path):
         if not root.is_absolute():
             root = config_dir / root
         train = MNIST(root, train=True, download=config.get("download", False))
-        X = train.data.numpy()
-        y = train.targets.numpy()
+        if config.get("split", "all") == "all":
+            test = MNIST(root, train=False, download=config.get("download", False))
+            X = np.concatenate([train.data.numpy(), test.data.numpy()])
+            y = np.concatenate([train.targets.numpy(), test.targets.numpy()])
+        elif config["split"] == "train":
+            X = train.data.numpy()
+            y = train.targets.numpy()
+        else:
+            raise ValueError("MNIST split must be 'all' or 'train'.")
     else:
         raise ValueError(f"Unsupported dataset kind: {kind!r}.")
 
     X = np.asarray(X, dtype=np.float32).reshape(len(X), -1)
+    subset_size = config.get("subset_size")
+    if subset_size is not None:
+        if not isinstance(subset_size, int) or not 0 < subset_size <= len(X):
+            raise ValueError("subset_size must be a positive integer within the dataset.")
+        rng = np.random.default_rng(config.get("subset_seed", 0))
+        indices = rng.choice(len(X), size=subset_size, replace=False)
+        X, y = X[indices], np.asarray(y)[indices]
     if config.get("normalization") == "dec":
         scale = np.sqrt(np.mean(np.square(X), axis=1, keepdims=True)).clip(1e-12)
         X = X / scale
@@ -102,6 +116,11 @@ def _environment():
         "cuda": torch.version.cuda,
         "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
     }
+
+
+def _array_sha256(array):
+    contiguous = np.ascontiguousarray(array)
+    return hashlib.sha256(contiguous.view(np.uint8)).hexdigest()
 
 
 def run_benchmark(config_path: str | Path):
@@ -166,7 +185,12 @@ def run_benchmark(config_path: str | Path):
         "config_path": str(path),
         "git_sha": _git_sha(),
         "environment": _environment(),
-        "dataset": {"samples": len(X), "features": X.shape[1]},
+        "dataset": {
+            "samples": len(X),
+            "features": X.shape[1],
+            "features_sha256": _array_sha256(X),
+            "labels_sha256": _array_sha256(y),
+        },
         "runs": runs,
         "aggregate": aggregate,
     }

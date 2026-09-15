@@ -14,3 +14,12 @@
 | Global SAE fine-tuning | `pretrain_epochs`, `pretrain_optimizer`, `pretrain_lr` | `_joint_autoencoder_pretrain` |
 
 The DEC reference is Xie et al., “Unsupervised Deep Embedding for Clustering Analysis,” ICML 2016. The IDEC reference is Guo et al., “Improved Deep Embedded Clustering with Local Structure Preservation,” IJCAI 2017. The committed reference YAML files are the executable specification; the smoke YAML is a fast practical wiring profile and is not presented as paper reproduction.
+
+## Recorded reproduction differences
+
+- This implementation is PyTorch rather than the original Caffe DEC and Keras IDEC code.
+- Pretraining duration is currently expressed as full-dataset epochs. The DEC paper specified 50,000 updates per greedy layer and 100,000 global autoencoder updates with a tenfold learning-rate drop every 20,000 updates.
+- The target is refreshed at a fixed `update_interval`, following the published IDEC algorithm and common later DEC implementations. The original DEC experiments additionally varied an annealing-speed parameter.
+- Exact random initialization streams and low-level floating-point kernels differ across frameworks. Benchmark output captures the concrete software and GPU environment.
+
+These differences are fixed before a run and are not selected using evaluation labels. A benchmark is called a reference run because it is the repository's traceable scientific reference, not because it is claimed to reproduce the authors' framework bit for bit.
