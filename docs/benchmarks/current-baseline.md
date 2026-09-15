@@ -11,6 +11,6 @@ The snapshot is Git commit `4e7d0edee09b0bab9404c203989dae1220a3744e` (2026-05-1
 
 Known semantic defects in that baseline were: auxiliary targets computed independently inside each mini-batch; one tolerance parameter reused for KMeans and training; no DEC label-change stop rule; and IDEC computing `cluster_loss + gamma * reconstruction_loss` rather than the published `reconstruction_loss + gamma * cluster_loss`. The numbers therefore must not be used as the v0.2 correctness oracle.
 
-The authoritative replacement is the JSON artifact produced by the reference YAML files in `configs/benchmarks`. It records all seeds, mean±standard deviation, environment, commit SHA and stopping state. Until those five-seed GPU runs are completed, the reference result is intentionally marked pending.
+The authoritative replacement is the five-seed result in `mnist-reference-2026-09-15.md`, produced by the reference YAML files in `configs/benchmarks`. It records mean±standard deviation, environment, commit SHA, data checksums and stopping state; full per-seed JSON remains on the GPU server.
 
 For comparison, the original DEC paper reports 84.30% MNIST ACC. The IDEC paper's common setup reports 86.55% for DEC and 88.06% ACC/86.72% NMI for IDEC. Differences in framework, stochastic optimization and the original DEC annealing parameter are tracked as reproduction variables rather than silently tuned against labels.
