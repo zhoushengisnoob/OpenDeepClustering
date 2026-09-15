@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+import os
 
 import numpy as np
 import torch
@@ -37,6 +38,9 @@ class SeedManager:
         devices = []
         if device.type == "cuda":
             devices = [device.index or 0]
+        previous_cublas_config = os.environ.get("CUBLAS_WORKSPACE_CONFIG")
+        if deterministic and device.type == "cuda":
+            os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
         previous_algorithms = torch.are_deterministic_algorithms_enabled()
         previous_cudnn_deterministic = torch.backends.cudnn.deterministic
         previous_cudnn_benchmark = torch.backends.cudnn.benchmark
@@ -54,3 +58,8 @@ class SeedManager:
                 torch.use_deterministic_algorithms(previous_algorithms)
                 torch.backends.cudnn.deterministic = previous_cudnn_deterministic
                 torch.backends.cudnn.benchmark = previous_cudnn_benchmark
+                if deterministic and device.type == "cuda":
+                    if previous_cublas_config is None:
+                        os.environ.pop("CUBLAS_WORKSPACE_CONFIG", None)
+                    else:
+                        os.environ["CUBLAS_WORKSPACE_CONFIG"] = previous_cublas_config
