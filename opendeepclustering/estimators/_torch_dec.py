@@ -1,151 +1,57 @@
-"""Shared PyTorch implementation for DEC-style estimators."""
+"""Paper-traceable PyTorch core for DEC-family estimators."""
 
 from __future__ import annotations
 
-import random
-from dataclasses import dataclass
-from typing import Iterable
+from collections.abc import Iterable
 
 import numpy as np
 import torch
-from sklearn.base import BaseEstimator, ClusterMixin
-from sklearn.cluster import KMeans
 from sklearn.utils.validation import check_is_fitted
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
-
-def _as_2d_numpy(X) -> np.ndarray:
-    """Convert common array-like inputs to a finite 2D float32 matrix."""
-    if hasattr(X, "to_numpy"):
-        X = X.to_numpy()
-    elif isinstance(X, torch.Tensor):
-        X = X.detach().cpu().numpy()
-
-    X = np.asarray(X, dtype=np.float32)
-    if X.ndim < 2:
-        raise ValueError("X must be at least 2-dimensional.")
-    if X.ndim > 2:
-        X = X.reshape(X.shape[0], -1)
-    if not np.isfinite(X).all():
-        raise ValueError("X contains NaN or infinite values.")
-    return X
+from opendeepclustering.base import DeepClusterMixin
+from opendeepclustering.components import (
+    StackedAutoEncoder,
+    StudentTClustering,
+    make_kmeans,
+    target_distribution,
+)
+from opendeepclustering.data import IndexedTensorDataset, to_tensor
+from opendeepclustering.training.callbacks import emit
+from opendeepclustering.training.random import SeedManager
+from opendeepclustering.training.state import FitState
 
 
-def _set_random_state(random_state: int | None) -> None:
-    if random_state is None:
-        return
-    random.seed(random_state)
-    np.random.seed(random_state)
-    torch.manual_seed(random_state)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed_all(random_state)
-
-
-def _target_distribution(q: torch.Tensor) -> torch.Tensor:
-    weight = q.pow(2) / q.sum(dim=0)
-    return (weight.t() / weight.sum(dim=1)).t()
-
-
-class _StackedAutoEncoder(nn.Module):
-    def __init__(self, input_dim: int, dims: Iterable[int]):
-        super().__init__()
-        dims = list(dims)
-        if not dims:
-            raise ValueError("dims must contain at least one latent dimension.")
-
-        encoder_layers = []
-        previous_dim = input_dim
-        for index, dim in enumerate(dims):
-            encoder_layers.append(nn.Linear(previous_dim, dim))
-            if index != len(dims) - 1:
-                encoder_layers.append(nn.ReLU())
-            previous_dim = dim
-
-        decoder_layers = []
-        reversed_dims = list(reversed(dims[:-1])) + [input_dim]
-        previous_dim = dims[-1]
-        for index, dim in enumerate(reversed_dims):
-            decoder_layers.append(nn.Linear(previous_dim, dim))
-            if index != len(reversed_dims) - 1:
-                decoder_layers.append(nn.ReLU())
-            previous_dim = dim
-
-        self.encoder = nn.Sequential(*encoder_layers)
-        self.decoder = nn.Sequential(*decoder_layers)
-
-    def forward(self, X: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        embedding = self.encoder(X)
-        reconstruction = self.decoder(embedding)
-        return embedding, reconstruction
-
-
-class _ClusteringLayer(nn.Module):
-    def __init__(
-        self,
-        n_clusters: int,
-        embedding_dim: int,
-        alpha: float,
-        initial_centers: np.ndarray | None = None,
-    ):
-        super().__init__()
-        self.n_clusters = n_clusters
-        self.alpha = alpha
-        self.centroids = nn.Parameter(torch.empty(n_clusters, embedding_dim))
-        nn.init.xavier_uniform_(self.centroids)
-        if initial_centers is not None:
-            self.centroids.data.copy_(
-                torch.as_tensor(initial_centers, dtype=torch.float32)
-            )
-
-    def forward(self, embeddings: torch.Tensor) -> torch.Tensor:
-        distances = torch.sum((embeddings.unsqueeze(1) - self.centroids) ** 2, dim=2)
-        q = 1.0 / (1.0 + distances / self.alpha)
-        q = q ** ((self.alpha + 1.0) / 2.0)
-        return q / q.sum(dim=1, keepdim=True)
-
-
-class _DeepEmbeddedClusteringModel(nn.Module):
+class _DECModel(nn.Module):
     def __init__(
         self,
         input_dim: int,
         dims: Iterable[int],
         n_clusters: int,
         alpha: float,
-        initial_centers: np.ndarray | None = None,
     ):
         super().__init__()
-        self.autoencoder = _StackedAutoEncoder(input_dim, dims)
-        self.clustering = _ClusteringLayer(
-            n_clusters=n_clusters,
-            embedding_dim=list(dims)[-1],
-            alpha=alpha,
-            initial_centers=initial_centers,
-        )
+        dims = tuple(dims)
+        self.autoencoder = StackedAutoEncoder(input_dim, dims)
+        self.clustering = StudentTClustering(n_clusters, dims[-1], alpha)
 
-    def forward(self, X: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        embeddings, reconstruction = self.autoencoder(X)
-        q = self.clustering(embeddings)
-        return q, embeddings, reconstruction
+    def forward(self, X: torch.Tensor):
+        embedding, reconstruction = self.autoencoder(X)
+        assignment = self.clustering(embedding)
+        return assignment, embedding, reconstruction
 
 
-@dataclass
-class _FitResult:
-    labels: np.ndarray
-    embeddings: np.ndarray
-    centers: np.ndarray
+class _BaseDEC(DeepClusterMixin):
+    """Shared implementation for DEC and IDEC.
 
-
-class _BaseDEC(BaseEstimator, ClusterMixin):
-    """Base estimator for DEC-family algorithms.
-
-    The class intentionally exposes a small scikit-learn style surface while
-    keeping the PyTorch training loop internal.
+    The clustering target is computed over the complete training set and
+    indexed back into shuffled mini-batches, matching the DEC-family papers.
     """
 
     algorithm_name = "DEC"
     taxonomy = "Simultaneous"
-    reconstruction_weight = 0.0
+    supports_soft_assignment = True
 
     def __init__(
         self,
@@ -153,204 +59,494 @@ class _BaseDEC(BaseEstimator, ClusterMixin):
         dims: tuple[int, ...] = (500, 500, 2000, 10),
         alpha: float = 1.0,
         pretrain_epochs: int = 50,
+        layerwise_pretrain_epochs: int | None = None,
+        pretrain_method: str = "joint",
+        corruption: float = 0.2,
         max_epochs: int = 100,
+        update_interval: int = 140,
         batch_size: int = 256,
+        num_workers: int = 0,
         lr: float = 1e-3,
+        pretrain_lr: float | None = None,
+        optimizer: str = "adam",
+        pretrain_optimizer: str | None = None,
+        momentum: float = 0.9,
         weight_decay: float = 0.0,
         n_init: int = 20,
         kmeans_max_iter: int = 300,
+        kmeans_tol: float = 1e-4,
         tol: float = 1e-3,
         device: str = "auto",
-        random_state: int | None = None,
+        random_state=None,
+        deterministic: bool = False,
+        resume_from: str | None = None,
+        callbacks=None,
         verbose: bool = False,
     ):
         self.n_clusters = n_clusters
         self.dims = dims
         self.alpha = alpha
         self.pretrain_epochs = pretrain_epochs
+        self.layerwise_pretrain_epochs = layerwise_pretrain_epochs
+        self.pretrain_method = pretrain_method
+        self.corruption = corruption
         self.max_epochs = max_epochs
+        self.update_interval = update_interval
         self.batch_size = batch_size
+        self.num_workers = num_workers
         self.lr = lr
+        self.pretrain_lr = pretrain_lr
+        self.optimizer = optimizer
+        self.pretrain_optimizer = pretrain_optimizer
+        self.momentum = momentum
         self.weight_decay = weight_decay
         self.n_init = n_init
         self.kmeans_max_iter = kmeans_max_iter
+        self.kmeans_tol = kmeans_tol
         self.tol = tol
         self.device = device
         self.random_state = random_state
+        self.deterministic = deterministic
+        self.resume_from = resume_from
+        self.callbacks = callbacks
         self.verbose = verbose
 
     def fit(self, X, y=None):
-        X = _as_2d_numpy(X)
+        X = self._validate_X(X, reset=True)
         self._validate_parameters(X)
-        _set_random_state(self.random_state)
-        self.n_features_in_ = X.shape[1]
         self.device_ = self._resolve_device()
+        self.seed_manager_ = SeedManager(self.random_state)
+        self.fit_state_ = FitState()
+        emit(self.callbacks, "fit_start", self, self.fit_state_)
 
-        data = torch.as_tensor(X, dtype=torch.float32)
-        self.model_ = _DeepEmbeddedClusteringModel(
-            input_dim=self.n_features_in_,
-            dims=self.dims,
-            n_clusters=self.n_clusters,
-            alpha=self.alpha,
-        ).to(self.device_)
+        data = to_tensor(X)
+        with self.seed_manager_.torch_fork(
+            self.device_, deterministic=self.deterministic
+        ):
+            self.model_ = _DECModel(
+                input_dim=self.n_features_in_,
+                dims=self.dims,
+                n_clusters=self.n_clusters,
+                alpha=self.alpha,
+            ).to(self.device_)
+            if self.resume_from is not None:
+                initial_labels = self._restore_checkpoint(data)
+            else:
+                if self.pretrain_method == "greedy":
+                    self._initialize_reference_weights()
+                self._pretrain(data)
+                initial_labels, centers = self._initialize_clusters(data)
+                self.model_.clustering = StudentTClustering(
+                    self.n_clusters,
+                    self.dims[-1],
+                    self.alpha,
+                    centers,
+                ).to(self.device_)
+            self._finetune(data, initial_labels)
 
-        self.history_ = {"pretrain_loss": [], "cluster_loss": []}
-        self._pretrain(data)
-        fit_result = self._initialize_clusters(data)
-        self._replace_clustering_layer(fit_result.centers)
-        self._finetune(data)
-        final_embeddings = self.transform(X)
-        self.embedding_ = final_embeddings
-        self.labels_ = self.predict(X)
-        self.cluster_centers_ = self.model_.clustering.centroids.detach().cpu().numpy()
+        assignments, embeddings, _ = self._all_outputs(data)
+        self.labels_ = assignments.argmax(dim=1).numpy().astype(np.int64)
+        self.embedding_ = embeddings.numpy()
+        self.cluster_centers_ = (
+            self.model_.clustering.centroids.detach().cpu().numpy().copy()
+        )
+        self.n_iter_ = self.fit_state_.n_iter
+        self.converged_ = self.fit_state_.converged
+        if self.fit_state_.stop_reason is None:
+            self.fit_state_.stop_reason = "max_epochs"
+        self.stop_reason_ = self.fit_state_.stop_reason
+        self.history_ = self.fit_state_.history
+        emit(self.callbacks, "fit_end", self, self.fit_state_)
         return self
 
-    def fit_predict(self, X, y=None) -> np.ndarray:
-        return self.fit(X).labels_
+    def save_checkpoint(self, path) -> None:
+        """Save explicit resumable state; fitting itself never writes files."""
+        check_is_fitted(self, "model_")
+        torch.save(
+            {
+                "model_state": self.model_.state_dict(),
+                "optimizer_state": getattr(self, "optimizer_state_", None),
+                "fit_state": self.fit_state_.as_dict(),
+                "n_features_in": self.n_features_in_,
+            },
+            path,
+        )
+
+    def _restore_checkpoint(self, data: torch.Tensor) -> np.ndarray:
+        checkpoint = torch.load(
+            self.resume_from, map_location=self.device_, weights_only=True
+        )
+        if checkpoint.get("n_features_in") != self.n_features_in_:
+            raise ValueError("Checkpoint feature count does not match X.")
+        self.model_.load_state_dict(checkpoint["model_state"])
+        state = checkpoint.get("fit_state", {})
+        self.fit_state_ = FitState(**state)
+        self.fit_state_.converged = False
+        self.fit_state_.stop_requested = False
+        self.fit_state_.stop_reason = None
+        self._resume_optimizer_state = checkpoint.get("optimizer_state")
+        self._just_resumed = True
+        return self._soft_assign_tensor(data).argmax(dim=1).numpy()
 
     def predict(self, X) -> np.ndarray:
-        return self.predict_proba(X).argmax(axis=1)
+        return self.soft_assign(X).argmax(axis=1).astype(np.int64)
+
+    def soft_assign(self, X) -> np.ndarray:
+        """Return Student-t cluster assignments for each sample."""
+        check_is_fitted(self, "model_")
+        X = self._validate_X(X, reset=False)
+        assignments, _, _ = self._all_outputs(to_tensor(X))
+        return assignments.numpy()
 
     def predict_proba(self, X) -> np.ndarray:
-        check_is_fitted(self, "model_")
-        X = _as_2d_numpy(X)
-        self._check_n_features(X)
-        self.model_.eval()
-        q_values = []
-        with torch.no_grad():
-            for (batch,) in self._loader(torch.as_tensor(X, dtype=torch.float32), shuffle=False):
-                q, _, _ = self.model_(batch.to(self.device_))
-                q_values.append(q.cpu().numpy())
-        return np.concatenate(q_values, axis=0)
+        """Alias for soft_assign; outputs are not calibrated probabilities."""
+        return self.soft_assign(X)
 
     def transform(self, X) -> np.ndarray:
         check_is_fitted(self, "model_")
-        X = _as_2d_numpy(X)
-        self._check_n_features(X)
-        self.model_.eval()
-        embeddings = []
-        with torch.no_grad():
-            for (batch,) in self._loader(torch.as_tensor(X, dtype=torch.float32), shuffle=False):
-                _, embedding, _ = self.model_(batch.to(self.device_))
-                embeddings.append(embedding.cpu().numpy())
-        return np.concatenate(embeddings, axis=0)
-
-    def get_embeddings(self, X=None) -> np.ndarray:
-        check_is_fitted(self, "model_")
-        if X is None:
-            return self.embedding_
-        return self.transform(X)
+        X = self._validate_X(X, reset=False)
+        _, embeddings, _ = self._all_outputs(to_tensor(X))
+        return embeddings.numpy()
 
     def _validate_parameters(self, X: np.ndarray) -> None:
-        if self.n_clusters < 2:
-            raise ValueError("n_clusters must be at least 2.")
+        integer_parameters = {
+            "n_clusters": self.n_clusters,
+            "pretrain_epochs": self.pretrain_epochs,
+            "max_epochs": self.max_epochs,
+            "update_interval": self.update_interval,
+            "batch_size": self.batch_size,
+            "num_workers": self.num_workers,
+            "n_init": self.n_init,
+            "kmeans_max_iter": self.kmeans_max_iter,
+        }
+        for name, value in integer_parameters.items():
+            minimum = (
+                0
+                if name in {"pretrain_epochs", "max_epochs", "num_workers"}
+                else 1
+            )
+            if not isinstance(value, (int, np.integer)) or value < minimum:
+                raise ValueError(f"{name} must be an integer >= {minimum}.")
         if self.n_clusters > X.shape[0]:
-            raise ValueError("n_clusters cannot exceed the number of samples.")
-        if len(self.dims) == 0 or min(self.dims) <= 0:
-            raise ValueError("dims must contain positive integers.")
-        if self.batch_size <= 0:
-            raise ValueError("batch_size must be positive.")
-        if self.pretrain_epochs < 0 or self.max_epochs < 0:
-            raise ValueError("pretrain_epochs and max_epochs must be non-negative.")
+            raise ValueError(
+                f"n_samples={X.shape[0]} should be >= n_clusters={self.n_clusters}."
+            )
+        if not isinstance(self.dims, (tuple, list)) or not self.dims:
+            raise ValueError("dims must be a non-empty sequence of positive integers.")
+        if any(not isinstance(dim, int) or dim <= 0 for dim in self.dims):
+            raise ValueError("dims must contain only positive integers.")
+        if self.alpha <= 0:
+            raise ValueError("alpha must be positive.")
+        if not 0 <= self.corruption < 1:
+            raise ValueError("corruption must be in [0, 1).")
+        if self.pretrain_method not in {"joint", "greedy"}:
+            raise ValueError("pretrain_method must be 'joint' or 'greedy'.")
+        if self.optimizer not in {"adam", "sgd"}:
+            raise ValueError("optimizer must be 'adam' or 'sgd'.")
+        if self.pretrain_optimizer not in {None, "adam", "sgd"}:
+            raise ValueError("pretrain_optimizer must be None, 'adam', or 'sgd'.")
+        if not 0 <= self.momentum < 1:
+            raise ValueError("momentum must be in [0, 1).")
+        if self.layerwise_pretrain_epochs is not None and (
+            not isinstance(self.layerwise_pretrain_epochs, int)
+            or self.layerwise_pretrain_epochs < 0
+        ):
+            raise ValueError("layerwise_pretrain_epochs must be None or >= 0.")
+        for name in ("lr", "kmeans_tol", "tol"):
+            if getattr(self, name) <= 0:
+                raise ValueError(f"{name} must be positive.")
+        if self.pretrain_lr is not None and self.pretrain_lr <= 0:
+            raise ValueError("pretrain_lr must be None or positive.")
+        if self.weight_decay < 0:
+            raise ValueError("weight_decay must be non-negative.")
 
     def _resolve_device(self) -> torch.device:
         if self.device == "auto":
             return torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        return torch.device(self.device)
+        try:
+            resolved = torch.device(self.device)
+        except (RuntimeError, TypeError) as exc:
+            raise ValueError(f"Invalid device: {self.device!r}.") from exc
+        if resolved.type == "cuda" and not torch.cuda.is_available():
+            raise ValueError("CUDA was requested but is not available.")
+        return resolved
 
-    def _loader(self, data: torch.Tensor, shuffle: bool) -> DataLoader:
-        dataset = TensorDataset(data)
-        return DataLoader(dataset, batch_size=self.batch_size, shuffle=shuffle)
+    def _loader(self, data: torch.Tensor, *, shuffle: bool) -> DataLoader:
+        return DataLoader(
+            IndexedTensorDataset(data),
+            batch_size=self.batch_size,
+            shuffle=shuffle,
+            generator=self.seed_manager_.torch if shuffle else None,
+            num_workers=self.num_workers,
+            worker_init_fn=self.seed_manager_.seed_worker if self.num_workers else None,
+        )
+
+    def _initialize_reference_weights(self) -> None:
+        for module in self.model_.modules():
+            if isinstance(module, nn.Linear):
+                nn.init.normal_(module.weight, mean=0.0, std=0.01)
+                nn.init.zeros_(module.bias)
 
     def _pretrain(self, data: torch.Tensor) -> None:
+        self.fit_state_.stage = "pretraining"
+        emit(self.callbacks, "stage_start", self, self.fit_state_)
         if self.pretrain_epochs == 0:
+            emit(self.callbacks, "stage_end", self, self.fit_state_)
             return
-        optimizer = torch.optim.Adam(
+        if self.pretrain_method == "greedy":
+            self._greedy_layerwise_pretrain(data)
+        self._joint_autoencoder_pretrain(data)
+        emit(self.callbacks, "stage_end", self, self.fit_state_)
+
+    def _greedy_layerwise_pretrain(self, data: torch.Tensor) -> None:
+        epochs = (
+            self.pretrain_epochs
+            if self.layerwise_pretrain_epochs is None
+            else self.layerwise_pretrain_epochs
+        )
+        if epochs == 0:
+            return
+        current = data
+        autoencoder = self.model_.autoencoder
+        criterion = nn.MSELoss()
+        for layer_index, (encoder, decoder) in enumerate(
+            zip(autoencoder.encoders, autoencoder.decoders)
+        ):
+            optimizer = self._make_optimizer(
+                [*encoder.parameters(), *decoder.parameters()],
+                lr=self.pretrain_lr or self.lr,
+                name=self.pretrain_optimizer or "sgd",
+            )
+            for _ in range(epochs):
+                total_loss = 0.0
+                seen = 0
+                loader = DataLoader(
+                    TensorDataset(current),
+                    batch_size=self.batch_size,
+                    shuffle=True,
+                    generator=self.seed_manager_.torch,
+                )
+                for (batch,) in loader:
+                    batch = batch.to(self.device_)
+                    corrupted = nn.functional.dropout(
+                        batch, p=self.corruption, training=True
+                    )
+                    hidden = encoder(corrupted)
+                    if layer_index != len(autoencoder.encoders) - 1:
+                        hidden = torch.relu(hidden)
+                    hidden = nn.functional.dropout(
+                        hidden, p=self.corruption, training=True
+                    )
+                    reconstruction = decoder(hidden)
+                    if layer_index != 0:
+                        reconstruction = torch.relu(reconstruction)
+                    loss = criterion(reconstruction, batch)
+                    optimizer.zero_grad()
+                    loss.backward()
+                    optimizer.step()
+                    total_loss += loss.item() * batch.shape[0]
+                    seen += batch.shape[0]
+                self.fit_state_.record(
+                    f"layerwise_loss_{layer_index}", total_loss / seen
+                )
+            with torch.no_grad():
+                transformed = []
+                for (batch,) in DataLoader(
+                    TensorDataset(current), batch_size=self.batch_size
+                ):
+                    batch = encoder(batch.to(self.device_))
+                    if layer_index != len(autoencoder.encoders) - 1:
+                        batch = torch.relu(batch)
+                    transformed.append(batch.cpu())
+                current = torch.cat(transformed)
+
+    def _joint_autoencoder_pretrain(self, data: torch.Tensor) -> None:
+        optimizer = self._make_optimizer(
             self.model_.autoencoder.parameters(),
-            lr=self.lr,
-            weight_decay=self.weight_decay,
+            lr=self.pretrain_lr or self.lr,
+            name=self.pretrain_optimizer or self.optimizer,
         )
         criterion = nn.MSELoss()
         for epoch in range(self.pretrain_epochs):
-            epoch_loss = 0.0
+            self.fit_state_.epoch = epoch + 1
+            total_loss = 0.0
             seen = 0
             self.model_.train()
-            for (batch,) in self._loader(data, shuffle=True):
+            for batch, _ in self._loader(data, shuffle=True):
                 batch = batch.to(self.device_)
                 _, reconstruction = self.model_.autoencoder(batch)
                 loss = criterion(reconstruction, batch)
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-                epoch_loss += loss.item() * batch.size(0)
-                seen += batch.size(0)
-            self.history_["pretrain_loss"].append(epoch_loss / seen)
-            self._log(epoch, "pretrain", self.history_["pretrain_loss"][-1])
+                total_loss += loss.item() * batch.shape[0]
+                seen += batch.shape[0]
+            average = total_loss / seen
+            self.fit_state_.record("pretrain_loss", average)
+            self._log("pretrain", epoch + 1, average)
+            emit(self.callbacks, "epoch_end", self, self.fit_state_)
 
-    def _initialize_clusters(self, data: torch.Tensor) -> _FitResult:
-        embeddings = self.transform(data)
-        kmeans = KMeans(
+    def _initialize_clusters(self, data: torch.Tensor):
+        embeddings = self._encode_tensor(data).numpy()
+        kmeans = make_kmeans(
             n_clusters=self.n_clusters,
             n_init=self.n_init,
             max_iter=self.kmeans_max_iter,
-            tol=self.tol,
+            tol=self.kmeans_tol,
             random_state=self.random_state,
         )
-        labels = kmeans.fit_predict(embeddings)
-        return _FitResult(
-            labels=labels,
-            embeddings=embeddings,
-            centers=kmeans.cluster_centers_,
-        )
+        labels = kmeans.fit_predict(embeddings).astype(np.int64)
+        return labels, kmeans.cluster_centers_.astype(np.float32)
 
-    def _replace_clustering_layer(self, centers: np.ndarray) -> None:
-        self.model_.clustering = _ClusteringLayer(
-            n_clusters=self.n_clusters,
-            embedding_dim=self.dims[-1],
-            alpha=self.alpha,
-            initial_centers=centers,
-        ).to(self.device_)
-
-    def _finetune(self, data: torch.Tensor) -> None:
+    def _finetune(self, data: torch.Tensor, initial_labels: np.ndarray) -> None:
+        self.fit_state_.stage = "clustering"
+        emit(self.callbacks, "stage_start", self, self.fit_state_)
         if self.max_epochs == 0:
+            emit(self.callbacks, "stage_end", self, self.fit_state_)
             return
-        optimizer = torch.optim.Adam(
-            self.model_.parameters(),
+
+        optimizer = self._make_optimizer(
+            self._finetune_parameters(),
             lr=self.lr,
-            weight_decay=self.weight_decay,
+            name=self.optimizer,
         )
-        reconstruction_loss = nn.MSELoss()
+        if getattr(self, "_resume_optimizer_state", None) is not None:
+            optimizer.load_state_dict(self._resume_optimizer_state)
+        previous_labels = initial_labels
+        targets = None
+        should_stop = False
         for epoch in range(self.max_epochs):
-            epoch_loss = 0.0
+            self.fit_state_.epoch = epoch + 1
+            epoch_total = epoch_cluster = epoch_reconstruction = 0.0
             seen = 0
             self.model_.train()
-            for (batch,) in self._loader(data, shuffle=True):
+            for batch, indices in self._loader(data, shuffle=True):
+                if targets is None or self.fit_state_.n_iter % self.update_interval == 0:
+                    assignments = self._soft_assign_tensor(data)
+                    targets = target_distribution(assignments).cpu()
+                    labels = assignments.argmax(dim=1).cpu().numpy()
+                    delta = float(np.mean(labels != previous_labels))
+                    self.fit_state_.record("delta_label", delta)
+                    if (
+                        self.fit_state_.n_iter > 0
+                        and not getattr(self, "_just_resumed", False)
+                        and delta < self.tol
+                    ):
+                        self.fit_state_.converged = True
+                        self.fit_state_.stop_reason = "label_change_below_tol"
+                        should_stop = True
+                        break
+                    previous_labels = labels
+                    self._just_resumed = False
+
+                self.model_.train()
+
                 batch = batch.to(self.device_)
-                q, _, reconstruction = self.model_(batch)
-                with torch.no_grad():
-                    p = _target_distribution(q)
-                loss = nn.functional.kl_div(q.log(), p, reduction="batchmean")
-                if self.reconstruction_weight:
-                    loss = loss + self.reconstruction_weight * reconstruction_loss(
-                        reconstruction, batch
-                    )
+                target = targets[indices].to(self.device_)
+                assignment, _, reconstruction = self.model_(batch)
+                cluster_loss = nn.functional.kl_div(
+                    assignment.clamp_min(1e-12).log(),
+                    target,
+                    reduction="batchmean",
+                )
+                reconstruction_loss = nn.functional.mse_loss(reconstruction, batch)
+                total_loss = self._combine_losses(
+                    cluster_loss, reconstruction_loss
+                )
                 optimizer.zero_grad()
-                loss.backward()
+                total_loss.backward()
                 optimizer.step()
-                epoch_loss += loss.item() * batch.size(0)
-                seen += batch.size(0)
-            self.history_["cluster_loss"].append(epoch_loss / seen)
-            self._log(epoch, "cluster", self.history_["cluster_loss"][-1])
 
-    def _check_n_features(self, X: np.ndarray) -> None:
-        if X.shape[1] != self.n_features_in_:
-            raise ValueError(
-                f"X has {X.shape[1]} features, but this estimator was fitted with "
-                f"{self.n_features_in_} features."
+                batch_size = batch.shape[0]
+                epoch_total += total_loss.item() * batch_size
+                epoch_cluster += cluster_loss.item() * batch_size
+                epoch_reconstruction += reconstruction_loss.item() * batch_size
+                seen += batch_size
+                self.fit_state_.n_iter += 1
+                self.fit_state_.step = self.fit_state_.n_iter
+
+            if seen:
+                self.fit_state_.record("total_loss", epoch_total / seen)
+                self.fit_state_.record("cluster_loss", epoch_cluster / seen)
+                self.fit_state_.record(
+                    "reconstruction_loss", epoch_reconstruction / seen
+                )
+                self._log("cluster", epoch + 1, epoch_total / seen)
+                self.optimizer_state_ = optimizer.state_dict()
+                emit(self.callbacks, "epoch_end", self, self.fit_state_)
+                if self.fit_state_.stop_requested:
+                    self.fit_state_.stop_reason = (
+                        self.fit_state_.stop_reason or "callback"
+                    )
+                    should_stop = True
+            if should_stop:
+                break
+        if not self.fit_state_.converged and self.fit_state_.stop_reason is None:
+            self.fit_state_.stop_reason = "max_epochs"
+        self.optimizer_state_ = optimizer.state_dict()
+        emit(self.callbacks, "stage_end", self, self.fit_state_)
+
+    def _finetune_parameters(self):
+        return [
+            *self.model_.autoencoder.encoders.parameters(),
+            *self.model_.clustering.parameters(),
+        ]
+
+    def _make_optimizer(self, parameters, *, lr: float, name: str):
+        if name == "sgd":
+            return torch.optim.SGD(
+                parameters,
+                lr=lr,
+                momentum=self.momentum,
+                weight_decay=self.weight_decay,
             )
+        return torch.optim.Adam(
+            parameters,
+            lr=lr,
+            weight_decay=self.weight_decay,
+        )
 
-    def _log(self, epoch: int, stage: str, loss: float) -> None:
+    def _combine_losses(
+        self,
+        cluster_loss: torch.Tensor,
+        reconstruction_loss: torch.Tensor,
+    ) -> torch.Tensor:
+        del reconstruction_loss
+        return cluster_loss
+
+    def _encode_tensor(self, data: torch.Tensor) -> torch.Tensor:
+        outputs = []
+        self.model_.eval()
+        with torch.no_grad():
+            for batch, _ in self._loader(data, shuffle=False):
+                outputs.append(
+                    self.model_.autoencoder.encode(batch.to(self.device_)).cpu()
+                )
+        return torch.cat(outputs)
+
+    def _soft_assign_tensor(self, data: torch.Tensor) -> torch.Tensor:
+        assignments, _, _ = self._all_outputs(data)
+        return assignments
+
+    def _all_outputs(self, data: torch.Tensor):
+        assignments = []
+        embeddings = []
+        reconstructions = []
+        self.model_.eval()
+        with torch.no_grad():
+            for batch, _ in self._loader(data, shuffle=False):
+                assignment, embedding, reconstruction = self.model_(
+                    batch.to(self.device_)
+                )
+                assignments.append(assignment.cpu())
+                embeddings.append(embedding.cpu())
+                reconstructions.append(reconstruction.cpu())
+        return (
+            torch.cat(assignments),
+            torch.cat(embeddings),
+            torch.cat(reconstructions),
+        )
+
+    def _log(self, stage: str, epoch: int, loss: float) -> None:
         if self.verbose:
-            print(
-                f"[{self.algorithm_name}] {stage} epoch={epoch + 1} loss={loss:.6f}"
-            )
+            print(f"[{self.algorithm_name}] {stage} epoch={epoch} loss={loss:.6f}")

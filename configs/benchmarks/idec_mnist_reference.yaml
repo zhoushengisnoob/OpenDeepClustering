@@ -1,0 +1,27 @@
+estimator: IDEC
+seeds: [0, 1, 2, 3, 4]
+dataset:
+  kind: mnist
+  root: ../../datasets
+  download: false
+  normalization: dec
+parameters:
+  n_clusters: 10
+  dims: [500, 500, 2000, 10]
+  alpha: 1.0
+  gamma: 0.1
+  pretrain_method: greedy
+  layerwise_pretrain_epochs: 50
+  pretrain_epochs: 100
+  pretrain_optimizer: sgd
+  pretrain_lr: 0.1
+  corruption: 0.2
+  optimizer: adam
+  lr: 0.001
+  max_epochs: 200
+  update_interval: 140
+  batch_size: 256
+  tol: 0.001
+  deterministic: true
+  device: cuda
+output: ../../benchmark_outputs/idec_mnist_reference.json
