@@ -1,0 +1,23 @@
+estimator: VaDE
+seeds: [7]
+dataset:
+  kind: blobs
+  params:
+    n_samples: 120
+    n_features: 8
+    centers: 3
+    cluster_std: 0.8
+    random_state: 7
+  normalization: unit
+parameters:
+  n_clusters: 3
+  hidden_dims: [16]
+  latent_dim: 3
+  pretrain_epochs: 1
+  max_epochs: 1
+  batch_size: 32
+  n_init: 3
+  reconstruction: gaussian
+  deterministic: true
+  device: cpu
+output: ../../benchmark_outputs/vade_smoke.json

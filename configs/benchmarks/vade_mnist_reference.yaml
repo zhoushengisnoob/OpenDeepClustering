@@ -1,0 +1,21 @@
+estimator: VaDE
+seeds: [0, 1, 2, 3, 4]
+dataset:
+  kind: mnist
+  root: ../../datasets
+  download: false
+  split: all
+  normalization: unit
+parameters:
+  n_clusters: 10
+  hidden_dims: [500, 500, 2000]
+  latent_dim: 10
+  pretrain_epochs: 10
+  max_epochs: 100
+  batch_size: 100
+  lr: 0.002
+  n_init: 20
+  reconstruction: bernoulli
+  deterministic: true
+  device: cuda
+output: ../../benchmark_outputs/vade_mnist_reference.json

@@ -4,9 +4,15 @@ The following objects form the supported public API.
 
 ## Estimators
 
+::: opendeepclustering.AutoencoderKMeans
+
 ::: opendeepclustering.DEC
 
+::: opendeepclustering.DeepCluster
+
 ::: opendeepclustering.IDEC
+
+::: opendeepclustering.VaDE
 
 ## Evaluation
 
