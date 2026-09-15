@@ -5,8 +5,6 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-import yaml
-
 try:
     import tomllib
 except ModuleNotFoundError:  # Python 3.10
@@ -20,8 +18,13 @@ SEMVER = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 def main() -> int:
     with (ROOT / "pyproject.toml").open("rb") as stream:
         package_version = tomllib.load(stream)["project"]["version"]
-    with (ROOT / "CITATION.cff").open(encoding="utf-8") as stream:
-        citation_version = str(yaml.safe_load(stream)["version"])
+    citation = (ROOT / "CITATION.cff").read_text(encoding="utf-8")
+    citation_match = re.search(
+        r'^version:\s*["\']?([^"\'\s]+)["\']?\s*$', citation, re.MULTILINE
+    )
+    if citation_match is None:
+        raise RuntimeError("CITATION.cff has no top-level version field")
+    citation_version = citation_match.group(1)
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
 
     if not SEMVER.fullmatch(package_version):
