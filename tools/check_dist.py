@@ -12,11 +12,13 @@ WHEEL_PACKAGE_PREFIX = "opendeepclustering/"
 WHEEL_METADATA_MARKER = ".dist-info/"
 SDIST_ALLOWED_ROOTS = {
     "CITATION.cff",
+    "CHANGELOG.md",
     "CONTRIBUTING.md",
     "LICENSE",
     "MANIFEST.in",
     "PKG-INFO",
     "README.md",
+    "RELEASING.md",
     "configs",
     "docs",
     "mkdocs.yml",
@@ -87,9 +89,11 @@ def _check_sdist(path: Path) -> None:
         )
     required = {
         Path("CITATION.cff"),
+        Path("CHANGELOG.md"),
         Path("CONTRIBUTING.md"),
         Path("LICENSE"),
         Path("README.md"),
+        Path("RELEASING.md"),
         Path("mkdocs.yml"),
         Path("pyproject.toml"),
     }

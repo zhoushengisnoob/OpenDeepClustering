@@ -10,7 +10,7 @@ authors:
 repository-code: "https://github.com/zhoushengisnoob/OpenDeepClustering"
 url: "https://github.com/zhoushengisnoob/OpenDeepClustering"
 license: BSD-2-Clause
-version: 0.1.0
+version: 0.2.0
 preferred-citation:
   type: article
   title: "A Comprehensive Survey on Deep Clustering: Taxonomy, Challenges, and Future Directions"

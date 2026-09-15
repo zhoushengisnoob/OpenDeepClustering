@@ -1,7 +1,9 @@
 include CITATION.cff
+include CHANGELOG.md
 include CONTRIBUTING.md
 include LICENSE
 include README.md
+include RELEASING.md
 include mkdocs.yml
 include pyproject.toml
 recursive-include configs/benchmarks *.yaml
