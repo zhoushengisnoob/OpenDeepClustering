@@ -1,0 +1,44 @@
+cff-version: 1.2.0
+message: "If you use OpenDeepClustering, please cite the survey below and this software."
+title: "OpenDeepClustering"
+type: software
+authors:
+  - family-names: Zhou
+    given-names: Sheng
+  - family-names: Liang
+    given-names: Guanbao
+repository-code: "https://github.com/zhoushengisnoob/OpenDeepClustering"
+url: "https://github.com/zhoushengisnoob/OpenDeepClustering"
+license: BSD-2-Clause
+version: 0.1.0
+preferred-citation:
+  type: article
+  title: "A Comprehensive Survey on Deep Clustering: Taxonomy, Challenges, and Future Directions"
+  authors:
+    - family-names: Zhou
+      given-names: Sheng
+    - family-names: Xu
+      given-names: Hongjia
+    - family-names: Zheng
+      given-names: Zhuonan
+    - family-names: Chen
+      given-names: Jiawei
+    - family-names: Li
+      given-names: Zhao
+    - family-names: Bu
+      given-names: Jiajun
+    - family-names: Wu
+      given-names: Jia
+    - family-names: Wang
+      given-names: Xin
+    - family-names: Zhu
+      given-names: Wenwu
+    - family-names: Ester
+      given-names: Martin
+  journal: "ACM Computing Surveys"
+  year: 2025
+  volume: 57
+  issue: 3
+  start: 1
+  end: 38
+  doi: "10.1145/3689036"

@@ -1,0 +1,46 @@
+site_name: OpenDeepClustering
+site_description: Scikit-learn style reference implementations for deep clustering
+site_url: https://zhoushengisnoob.github.io/OpenDeepClustering/
+repo_url: https://github.com/zhoushengisnoob/OpenDeepClustering
+repo_name: zhoushengisnoob/OpenDeepClustering
+copyright: Copyright &copy; 2024-2026 OpenDeepClustering contributors
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Algorithms: algorithms.md
+  - Python API: api.md
+  - Reproducible benchmarks: benchmarking.md
+  - Benchmark records:
+      - Current baseline: benchmarks/current-baseline.md
+      - MNIST reference (2026-09-15): benchmarks/mnist-reference-2026-09-15.md
+  - Architecture:
+      - Estimator contract: architecture/estimator-contract.md
+      - DEC/IDEC traceability: architecture/dec-idec-traceability.md
+  - Provenance and licenses: provenance.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            inherited_members: true
+            show_root_heading: true
+            show_source: false
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+
+strict: true
