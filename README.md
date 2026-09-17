@@ -1,153 +1,99 @@
-![# Open Deep Clustering](pic/deepclustering-logo.png)
-<p align="center">
-  <a href="#about">Overview</a> •
-  <a href="#installation">Installation</a> •
-  <a href="#citation">Citation</a> 
-</p>
+# OpenDeepClustering
 
-[![GitHub Repo stars](https://img.shields.io/github/stars/zhoushengisnoob/OpenDeepClustering)](https://github.com/zhoushengisnoob/OpenDeepClustering/stargazers)
-[![GitHub Code License](https://img.shields.io/github/license/zhoushengisnoob/OpenDeepClustering)](LICENSE)
-[![GitHub last commit](https://img.shields.io/github/last-commit/zhoushengisnoob/OpenDeepClustering)](https://github.com/zhoushengisnoob/OpenDeepClustering/commits/main)
-[![Citation](https://img.shields.io/badge/citation-82-green)](#projects-using-open-deep-clustering)
-[![GitHub pull request](https://img.shields.io/badge/PRs-welcome-blue)](https://github.com/zhoushengisnoob/OpenDeepClustering/pulls)
+![OpenDeepClustering logo](pic/deepclustering-logo.png)
 
-## About
-Hello :wave:, we are a team of researchers from the Eagle-Lab (InnovativE SoftwAre TechnoloGy DeveLopment CentEr), Zhejiang University. Here are two questions and answers that embody the essence of our mission for this repository.
-### What is clustering task?
-The primary purpose of clustering is to assign the instances into groups so that the similar samples belong to the same cluster while dissimilar samples belong to different clusters.
-### Why deep clustering?
-Although shallow clustering methods like KMeans have achieved tremendous success, they can no longer be directly applied to deal with high-dimension or complicated unstructured data like images. 
+[![CI](https://github.com/zhoushengisnoob/OpenDeepClustering/actions/workflows/ci.yml/badge.svg)](https://github.com/zhoushengisnoob/OpenDeepClustering/actions/workflows/ci.yml)
+[![GitHub release](https://img.shields.io/github/v/release/zhoushengisnoob/OpenDeepClustering)](https://github.com/zhoushengisnoob/OpenDeepClustering/releases/tag/v0.2.0)
+[![License](https://img.shields.io/github/license/zhoushengisnoob/OpenDeepClustering)](LICENSE)
 
-**Deep Clustering**, which aims at joint optimization of deep representation learning and clustering, arises and has attracted increasing attention recently in the community.
+OpenDeepClustering is a scikit-learn-style research library accompanying our [survey of deep clustering](https://doi.org/10.1145/3689036). It organizes methods by how representation learning and clustering interact, with a shared Python API and reproducible benchmark CLI.
 
-## :dart:News
-[26/05/13] We are refactoring OpenDeepClustering toward a scikit-learn style Python package, with unified `fit`, `predict`, `fit_predict`, and `transform` interfaces. The next updates will focus on wrapping representative methods from our survey taxonomy into reusable estimators for both researchers and non-CS users.
+**Current release:** [v0.2.0](https://github.com/zhoushengisnoob/OpenDeepClustering/releases/tag/v0.2.0). The supported package is distinct from the historical reproduction scripts still present under `models/` and `scripts/`.
 
-[24/05/06] We have already implemented **10+ algorithms** which can be classified into four categories (Generative, Iterative, MultiStage, Simultaneous) locally. These algorithms will be uploaded soon after rigorous testing. **If you find this repository useful for you studies, please star it** :star:.
+## Implemented estimators
 
-[24/05/07] We have added the DEC and IDEC algorithms to our repository.
+| Survey pattern | Estimator | Evidence status | Inputs |
+| --- | --- | --- | --- |
+| Multi-stage | `AutoencoderKMeans` | Architecture reference | Dense tabular features |
+| Iterative | `DeepCluster` | Architecture reference | Dense tabular features or NCHW image tensors |
+| Generative | `VaDE` | Architecture reference | Dense tabular features |
+| Simultaneous | `DEC`, `IDEC` | Reference implementations | Dense tabular features |
 
-[24/09/09] We will update the repository soon.
+All five expose `fit`, `fit_predict` and `transform`. `predict` is available when the chosen shallow clusterer supports it; DEC, IDEC and VaDE also expose soft assignments. VaDE additionally supports sampling. See the [algorithm status](docs/algorithms.md) and [estimator contract](docs/architecture/estimator-contract.md) for precise capabilities.
 
-## Supported Models
-| Model                                                 | Taxonomy     | Clustering Module  | Type  | GPU Memory |
-| ----------------------------------------------------- | ------------ | ------------------ | ----- | ---|
-| [DEC](https://proceedings.mlr.press/v48/xieb16.pdf) | Simultaneous | Auto-encoder based | Image |3G|
-[IDEC](https://www.researchgate.net/profile/Xifeng-Guo/publication/317095655_Improved_Deep_Embedded_Clustering_with_Local_Structure_Preservation/links/59263224458515e3d4537edc/Improved-Deep-Embedded-Clustering-with-Local-Structure-Preservation.pdf)|Simultaneous | Auto-encoder based | Image |3G|
-| update soon                          | ... | ... | ... | ... 
-
-
-## Supported Dataset
-|Dataset                                                 | Classes     | RGB  | Type  | Shape|
-| ----------------------------------------------------- | ------------ | ------------------ | ----- | ----|
-| [MNIST](https://pytorch.org/vision/stable/generated/torchvision.datasets.MNIST.html#mnist) | 10 | :negative_squared_cross_mark: | Image | 28 * 28 |
-| [STL10](https://pytorch.org/vision/stable/generated/torchvision.datasets.STL10.html?highlight=stl10#torchvision.datasets.STL10) | 10 | :white_check_mark: | Image | 96 * 96 |
-| [CIFAR10](https://pytorch.org/vision/stable/generated/torchvision.datasets.CIFAR10.html#cifar10) | 10 | :white_check_mark:	 | Image | 32 * 32 |
-| [CIFAR100](https://pytorch.org/vision/stable/generated/torchvision.datasets.CIFAR100.html?highlight=cifar100#torchvision.datasets.CIFAR100) | 100 | :white_check_mark:	 | Image |
-| update soon                          | ... | ... | ... |...
+“Architecture reference” means the method's defining interaction pattern and mathematical core are implemented and tested. It does **not** claim an exact reproduction of the original paper's architecture or reported scores. DEC/IDEC have [five-seed MNIST evidence](docs/benchmarks/mnist-reference-2026-09-15.md); the other representatives currently have [architecture smoke evidence](docs/benchmarks/four-pattern-smoke-2026-09-15.md) and committed reference configurations, but not completed multi-seed quality reports.
 
 ## Installation
-Step-1, clone this repository.
-```sh
+
+Python 3.10 and 3.11 are tested in CI. Install from a checkout:
+
+```bash
 git clone https://github.com/zhoushengisnoob/OpenDeepClustering.git
 cd OpenDeepClustering
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e .
 ```
 
-Step-2, create a new conda environment and download the dependencies.
-```sh
-conda create -n deepclustering python=3.10 -y
-conda activate deepclustering
-pip install -r requirements.txt
-pip install -e .
-```
+For the exact v0.2.0 artifact, install the [release wheel](https://github.com/zhoushengisnoob/OpenDeepClustering/releases/download/v0.2.0/opendeepclustering-0.2.0-py3-none-any.whl) with `python -m pip install <downloaded-wheel-path>`. This release has **not** been published to PyPI. For the optional MNIST loader, install `.[image]` from a checkout.
 
-## :rocket:Quick start
-> [!IMPORTANT]
-> Please be sure to make `OpenDeepClustering` as the working directory if you want to run the code.
+## Quick start
 
-### Package API
-OpenDeepClustering now provides a scikit-learn style API for users who want to call
-deep clustering methods from their own Python code.
+A small CPU example that needs no dataset download:
 
 ```python
-from opendeepclustering import DEC, IDEC
+from sklearn.datasets import make_blobs
+from opendeepclustering import AutoencoderKMeans
 
-model = DEC(n_clusters=10, pretrain_epochs=50, max_epochs=100)
+X, _ = make_blobs(
+    n_samples=120, n_features=8, centers=3, random_state=7
+)
+model = AutoencoderKMeans(
+    n_clusters=3,
+    dims=(16, 3),
+    max_epochs=1,
+    batch_size=32,
+    random_state=7,
+    deterministic=True,
+    device="cpu",
+)
 labels = model.fit_predict(X)
-embeddings = model.transform(X)
-probabilities = model.predict_proba(X)
+embedding = model.transform(X)
+print(labels.shape, embedding.shape)
 ```
 
-The first package-level estimators are `DEC` and `IDEC`, both organized under the
-`Simultaneous` taxonomy from our deep clustering survey. Inputs can be NumPy-like
-arrays, pandas data frames, or PyTorch tensors. Image tensors with shape
-`(n_samples, channels, height, width)` are flattened automatically.
+The package accepts finite dense arrays or tensors. Most estimators expect 2D samples; DeepCluster also accepts explicit NCHW image tensors. Image flattening is a deliberate data-adapter choice, not an automatic behavior of every estimator.
 
-**(Recommend way)**
-Please modify the configuration files in the `configs` packages before running the codes. 
-- The `base.yaml` contains the basic experiment settings for all the methods.
-- A yaml file with a similar naming format like `DEC.yaml` contains the specific hyper parameters.
-```sh
-cd OpenDeepClustering
-# if pretrain is need
-python models/Simultaneous/DEC/pretrain.py
-python models/Simultaneous/DEC/main.py
+The CLI uses the same estimator implementations:
+
+```bash
+odc benchmark --config configs/benchmarks/autoencoder_kmeans_smoke.yaml
 ```
 
-(Alternative way) Please refer to the `scripts` packages for direct running script with default settings.
-```sh
-cd OpenDeepClustering
-bash scripts/dec_pretrain.sh
+Run benchmark configurations from a source checkout. Smoke runs use synthetic data and validate wiring, **not** algorithm quality. The current CLI supports synthetic blobs, NPZ files and MNIST (with optional torchvision); dataset downloads are never implicit. Benchmark JSON records configuration, Git revision, environment, data checksums, seed-level metrics and stopping information. See the [benchmark guide](docs/benchmarking.md) and [quickstart](docs/quickstart.md).
 
-# dec_pretrain.sh
-nohup python -u models/Simultaneous/DEC/pretrain.py \
-    --dataset_name MNIST \
-    --dataset_dir ~/dataset \
-    --class_num 10 \
-    --grey True \
-    --img_size_at 28 28 \
-    --optimizer sgd \
-    --lr 0.1 \
-    --weight_decay 0 \
-    --sgd_momentum 0.9 \
-    --use_vision False \
-    --batch_size 256 \
-    --num_workers 16 \
-    --verbose True \
-    --save_step 5000 \
-    --dims 500 500 2000 10 \
-    >./exps/mnist/dec/pretrain.log &
-```
-> [!TIP]
-> - log will be saved in `./logs/datasetname/methodname/trainingtype/`
->  - model will be saved in `./model_saves/datasetname/methodname/trainingtype/`
-> - nohup files will be saved in `./exps/datasetname/methodname/trainingtype`
+## Reproducibility and legacy code
 
+The supported package API, configurations and evidence live in `opendeepclustering/`, `configs/benchmarks/` and `docs/benchmarks/`. The older `models/`, `scripts/` and `configs/DEC.yaml`/`configs/IDEC.yaml` paths remain for historical reproduction; they are not the v0.2.0 installation or benchmarking interface. Results previously shown for MNIST, STL10 and CIFAR10 in this README came from that legacy workflow and should not be compared directly with the versioned package benchmarks.
 
-## Implementation Results
-|Model |Backbone | MNIST | STL10  | CIFAR10  |
-| ----------------------------------------------------- |---- |------------ | ------------------ | ----- |
-| [DEC](https://proceedings.mlr.press/v48/xieb16.pdf) | / | 69.79% | 26.56% | 21.13% |
-|[IDEC](https://www.researchgate.net/profile/Xifeng-Guo/publication/317095655_Improved_Deep_Embedded_Clustering_with_Local_Structure_Preservation/links/59263224458515e3d4537edc/Improved-Deep-Embedded-Clustering-with-Local-Structure-Preservation.pdf)| /| 69.31% | 26.60% | 21.19%|
-|update soon| ... | ... | ... | ...|
+Development history is in the [changelog](CHANGELOG.md); the next evidence and usability work is tracked in the [v0.3 roadmap](https://github.com/zhoushengisnoob/OpenDeepClustering/issues/19). Contributions are welcome via [issues](https://github.com/zhoushengisnoob/OpenDeepClustering/issues) and [pull requests](https://github.com/zhoushengisnoob/OpenDeepClustering/pulls); see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Citation
-:smiley:Our paper is posted on arXiv: [A comprehensive survey on deep clustering: Taxonomy, challenges, and future directions](https://arxiv.org/abs/2206.07579). 
-```
-@article{zhou2022comprehensive,
-  title={A comprehensive survey on deep clustering: Taxonomy, challenges, and future directions},
-  author={Zhou, Sheng and Xu, Hongjia and Zheng, Zhuonan and Chen, Jiawei and Bu, Jiajun and Wu, Jia and Wang, Xin and Zhu, Wenwu and Ester, Martin and others},
-  journal={arXiv preprint arXiv:2206.07579},
-  year={2022}
+
+If this repository supports your work, please cite the survey and the software. [`CITATION.cff`](CITATION.cff) contains the authoritative citation metadata.
+
+```bibtex
+@article{zhou2025comprehensive,
+  title={A Comprehensive Survey on Deep Clustering: Taxonomy, Challenges, and Future Directions},
+  author={Zhou, Sheng and Xu, Hongjia and Zheng, Zhuonan and Chen, Jiawei and Li, Zhao and Bu, Jiajun and Wu, Jia and Wang, Xin and Zhu, Wenwu and Ester, Martin},
+  journal={ACM Computing Surveys},
+  volume={57},
+  number={3},
+  pages={1--38},
+  year={2025},
+  doi={10.1145/3689036}
 }
 ```
 
-## Contact
-If you have any questions or suggestions while using our code, please feel free to contact us via the following ways. Our response will be sent to you quickly.
-
-:point_right: Submit an issue in the GitHub repository with [link](https://github.com/zhoushengisnoob/OpenDeepClustering/issues).
-
-<!-- :email: Send us a email: [rencailgb@gmail.com](mailto:rencailgb@gmail.com) -->
-
-## Star History
-![Star History Chart](https://api.star-history.com/svg?repos=zhoushengisnoob/OpenDeepClustering&type=Date)
+OpenDeepClustering is distributed under the [BSD-2-Clause license](LICENSE).
