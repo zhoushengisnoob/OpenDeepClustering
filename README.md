@@ -25,18 +25,107 @@ All five expose `fit`, `fit_predict` and `transform`. `predict` is available whe
 
 ## Installation
 
-Python 3.10 and 3.11 are tested in CI. Install from a checkout:
+### Validated Linux GPU environment
+
+Use one **project-local `.venv`** for installation, testing and experiments. The following environment was validated on Ubuntu 24.04.3 LTS with four RTX 3090 GPUs and NVIDIA driver 580.173.02 on 2026-09-30:
+
+| Component | Validated version |
+| --- | --- |
+| Python | 3.12.3 |
+| PyTorch | 2.5.1+cu124 |
+| torchvision | 0.20.1+cu124 |
+| CUDA runtime supplied by the PyTorch wheels | 12.4 |
+| NumPy | 1.26.4 |
+| SciPy | 1.11.4 |
+| scikit-learn | 1.4.2 |
+
+Python 3.10 and 3.11 remain covered by CI; Python 3.12 was additionally validated on this GPU server. This is a working runtime profile, not the identical environment used for the earlier [five-seed MNIST reference](docs/benchmarks/mnist-reference-2026-09-15.md).
+
+Install Python 3.12 with `venv` support and an NVIDIA driver that supports CUDA 12.4 before starting. On Ubuntu, the relevant Python packages are `python3.12` and `python3.12-venv`. Check the driver with `nvidia-smi`. The prebuilt PyTorch wheels supply the CUDA runtime; this workflow does not require compiling PyTorch or installing a separate CUDA toolkit.
 
 ```bash
 git clone https://github.com/zhoushengisnoob/OpenDeepClustering.git
 cd OpenDeepClustering
-python -m venv .venv
+
+python3.12 -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -e .
+python -m pip install --upgrade pip "setuptools>=77"
+
+python -m pip install "numpy==1.26.4" "scipy==1.11.4" "scikit-learn==1.4.2"
+python -m pip install "torch==2.5.1" "torchvision==0.20.1" \
+    --index-url https://download.pytorch.org/whl/cu124
+python -m pip install -e ".[test,image,benchmark]"
+python -m pip check
 ```
 
-For the exact v0.2.0 artifact, install the [release wheel](https://github.com/zhoushengisnoob/OpenDeepClustering/releases/download/v0.2.0/opendeepclustering-0.2.0-py3-none-any.whl) with `python -m pip install <downloaded-wheel-path>`. This release has **not** been published to PyPI. For the optional MNIST loader, install `.[image]` from a checkout.
+Keep PyTorch and torchvision paired as in the [official version instructions](https://pytorch.org/get-started/previous-versions/). `pyproject.toml` is the authoritative dependency specification; `test`, `image` and `benchmark` install the experiment and validation extras. For development and documentation tools, also install `.[dev,docs]` in this same environment.
+
+If PyPI downloads are slow, append `--index-url https://pypi.tuna.tsinghua.edu.cn/simple` to the non-PyTorch installation commands. Keep the PyTorch command's CUDA wheel index unchanged. For Linux CPU-only use, replace `cu124` with `cpu` in that command and skip the CUDA checks below. Other platforms should select their wheel source using the official PyTorch instructions.
+
+### Activate before every experiment
+
+From the cloned repository, run this in each new shell, SSH session or batch job:
+
+```bash
+source .venv/bin/activate
+export CUBLAS_WORKSPACE_CONFIG=:4096:8
+python -c "import sys; print(sys.executable)"
+```
+
+The printed executable should end in `OpenDeepClustering/.venv/bin/python`. Set `CUBLAS_WORKSPACE_CONFIG` before starting Python when using deterministic CUDA training. On shared servers, an unactivated Anaconda/base interpreter or packages installed with `pip --user` can select a different, incompatible environment. Use `python -m pip` inside `.venv` for subsequent installations.
+
+### Verify the environment
+
+Check imports, CUDA computation and torchvision's compiled CUDA operation:
+
+```bash
+python - <<'PY'
+import sys
+import torch
+import torchvision
+
+print("Python:", sys.executable)
+print("PyTorch:", torch.__version__, "CUDA runtime:", torch.version.cuda)
+print("torchvision:", torchvision.__version__)
+assert torch.cuda.is_available(), "CUDA is unavailable; check the driver and wheel build"
+print("GPUs:", torch.cuda.device_count())
+for i in range(torch.cuda.device_count()):
+    device = f"cuda:{i}"
+    x = torch.randn(32, 32, device=device, requires_grad=True)
+    (x @ x.T).square().mean().backward()
+    boxes = torch.tensor([[0., 0., 1., 1.]], device=device)
+    scores = torch.tensor([0.9], device=device)
+    torchvision.ops.nms(boxes, scores, 0.5)
+    torch.cuda.synchronize(i)
+    print(i, torch.cuda.get_device_name(i), "forward/backward and NMS passed")
+PY
+
+python -m pytest -q
+odc benchmark --config configs/benchmarks/autoencoder_kmeans_smoke.yaml
+```
+
+The smoke configuration above uses synthetic data on CPU. To check the real MNIST loading and GPU training path, explicitly download MNIST first, then run the committed subset configuration:
+
+```bash
+python - <<'PY'
+from torchvision.datasets import MNIST
+MNIST("datasets", train=True, download=True)
+MNIST("datasets", train=False, download=True)
+PY
+
+CUDA_VISIBLE_DEVICES=0 odc benchmark --config configs/benchmarks/mnist_subset_gpu.yaml
+```
+
+The subset configuration uses 10,000 MNIST samples and a short training budget; it is not a full reference experiment. The server environment validation separately passed 28 project tests, computation on all four GPUs, and short GPU training runs for all five estimators on 1,024 MNIST samples. These checks establish runtime functionality, not reproduced paper-level accuracy.
+
+Save the resolved versions alongside your experiment records:
+
+```bash
+mkdir -p benchmark_outputs/environment
+python -m pip freeze > benchmark_outputs/environment/requirements.lock.txt
+```
+
+Benchmark JSON also records environment information. The existing server's validation reports are under `benchmark_outputs/environment-repair/`; that directory is ignored by Git and is not included in a fresh clone. Dataset sources, download commands and NPZ preparation are documented in [datasets/README.md](datasets/README.md); only that README is versioned in the dataset directory. See the [benchmark guide](docs/benchmarking.md) for reproducible experiment records.
 
 ## Quick start
 
