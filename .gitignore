@@ -12,7 +12,9 @@ site/
 .env
 
 data_cache/
-datasets/
+# Keep dataset documentation; raw data, prepared arrays and local manifests stay local.
+/datasets/*
+!/datasets/README.md
 logs/
 model_saves/
 checkpoints/
