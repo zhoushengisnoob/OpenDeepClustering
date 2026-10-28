@@ -74,11 +74,41 @@ def cluster_ari(y_true, y_pred):
     """Return adjusted Rand index."""
     return ari_score(y_true, y_pred)
 
+
+def embedding_effective_rank(embedding) -> float:
+    """Return the effective rank of an embedding as a collapse indicator.
+
+    The value is the exponential of the Shannon entropy of the normalized
+    singular-value-squared spectrum of the centered embedding. It ranges from
+    1.0, when all variance lies along a single direction, to the embedding
+    dimension when variance is spread evenly.
+
+    Unlike counting distinct cluster assignments, this detects representation
+    collapse: KMeans returns ``n_clusters`` non-empty clusters regardless of
+    whether the embedding carries usable structure.
+    """
+    array = np.asarray(embedding, dtype=np.float64)
+    if array.ndim != 2:
+        raise ValueError("embedding must be a 2D array of shape (n_samples, n_features).")
+    if array.size == 0:
+        raise ValueError("embedding must not be empty.")
+    centered = array - array.mean(axis=0, keepdims=True)
+    singular = np.linalg.svd(centered, compute_uv=False)
+    energy = float(np.sum(np.square(singular)))
+    if energy <= 0:
+        return 1.0
+    share = np.square(singular) / energy
+    positive = share[share > 0]
+    entropy = float(-np.sum(positive * np.log(positive)))
+    return float(np.exp(entropy))
+
+
 __all__ = [
     "ClusteringScores",
     "cluster_acc_f1",
     "cluster_ari",
     "cluster_nmi",
+    "embedding_effective_rank",
     "eva",
     "evaluate_clustering",
 ]

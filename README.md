@@ -15,13 +15,15 @@ OpenDeepClustering is a scikit-learn-style research library accompanying our [su
 | Survey pattern | Estimator | Evidence status | Inputs |
 | --- | --- | --- | --- |
 | Multi-stage | `AutoencoderKMeans` | Architecture reference | Dense tabular features |
-| Iterative | `DeepCluster` | Architecture reference | Dense tabular features or NCHW image tensors |
+| Iterative | `DeepCluster` | **Known defect, not usable for clustering quality** | Dense tabular features or NCHW image tensors |
 | Generative | `VaDE` | Architecture reference | Dense tabular features |
 | Simultaneous | `DEC`, `IDEC` | Reference implementations | Dense tabular features |
 
 All five expose `fit`, `fit_predict` and `transform`. `predict` is available when the chosen shallow clusterer supports it; DEC, IDEC and VaDE also expose soft assignments. VaDE additionally supports sampling. See the [algorithm status](docs/algorithms.md) and [estimator contract](docs/architecture/estimator-contract.md) for precise capabilities.
 
-“Architecture reference” means the method's defining interaction pattern and mathematical core are implemented and tested. It does **not** claim an exact reproduction of the original paper's architecture or reported scores. DEC/IDEC have [five-seed MNIST evidence](docs/benchmarks/mnist-reference-2026-09-15.md); the other representatives currently have [architecture smoke evidence](docs/benchmarks/four-pattern-smoke-2026-09-15.md) and committed reference configurations, but not completed multi-seed quality reports.
+“Architecture reference” means the method's defining interaction pattern and mathematical core are implemented and tested. It does **not** claim an exact reproduction of the original paper's architecture or reported scores. DEC/IDEC have [five-seed MNIST evidence](docs/benchmarks/mnist-reference-2026-09-15.md). `AutoencoderKMeans` and `VaDE` have [20-seed MNIST evidence](docs/benchmarks/three-pattern-mnist-2026-09-18.md) at 0.7916 ± 0.0188 and 0.7158 ± 0.0443 accuracy respectively, alongside [architecture smoke evidence](docs/benchmarks/four-pattern-smoke-2026-09-15.md).
+
+`DeepCluster` is the exception and does not currently meet that bar. On MNIST it scores 0.2040 ± 0.0137 accuracy over 20 seeds, which is **below the 0.5342 reached by KMeans on raw pixels** with no representation learning at all. The cause is a representation collapse present at initialisation: global average pooling to a single spatial cell reduces the 32-dimensional embedding to an effectively one-dimensional one. Repairing every defect identified so far reaches 0.4140 ± 0.0250, still short of the raw-pixel reference. The evidence, the cause isolation and the ablation of candidate repairs are in [the collapse record](docs/benchmarks/deepcluster-collapse-2026-10-28.md). Treat this estimator as a demonstration of the iterative interaction pattern's wiring, not as a working clustering method, until that record's open items are addressed.
 
 ## Installation
 

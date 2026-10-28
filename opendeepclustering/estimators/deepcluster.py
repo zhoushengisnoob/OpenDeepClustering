@@ -12,6 +12,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from opendeepclustering.base import DeepClusterMixin
 from opendeepclustering.components import make_kmeans
 from opendeepclustering.estimators._utils import resolve_device
+from opendeepclustering.metrics import embedding_effective_rank
 from opendeepclustering.training.callbacks import emit
 from opendeepclustering.training.random import SeedManager
 from opendeepclustering.training.state import FitState
@@ -132,9 +133,7 @@ class DeepCluster(DeepClusterMixin):
                 embeddings = self._extract(data)
                 clusterer = self._make_kmeans(round_index)
                 pseudo_labels = clusterer.fit_predict(embeddings).astype(np.int64)
-                self.fit_state_.record(
-                    "active_clusters", float(len(np.unique(pseudo_labels)))
-                )
+                self._record_collapse(embeddings, pseudo_labels)
 
                 self.fit_state_.stage = "classifier_update"
                 emit(self.callbacks, "stage_start", self, self.fit_state_)
@@ -186,6 +185,8 @@ class DeepCluster(DeepClusterMixin):
             self.cluster_centers_ = self.clusterer_.cluster_centers_.astype(
                 np.float32, copy=True
             )
+            self._record_collapse(self.embedding_, self.labels_)
+            self.effective_rank_ = float(self.fit_state_.history["effective_rank"][-1])
 
         self.n_iter_ = self.fit_state_.n_iter
         self.converged_ = True
@@ -251,6 +252,22 @@ class DeepCluster(DeepClusterMixin):
             raise ValueError("momentum must be in [0, 1).")
         if self.weight_decay < 0 or self.augmentation_noise < 0:
             raise ValueError("weight_decay and augmentation_noise must be non-negative.")
+
+    def _record_collapse(self, embeddings: np.ndarray, labels: np.ndarray) -> None:
+        """Record representation-collapse indicators for one clustering pass.
+
+        ``active_clusters`` is retained for continuity but cannot detect
+        collapse: KMeans returns ``n_clusters`` non-empty clusters whatever the
+        embedding looks like. ``effective_rank`` and ``mean_dim_std`` are the
+        indicators that respond to a degenerate representation.
+        """
+        self.fit_state_.record("active_clusters", float(len(np.unique(labels))))
+        self.fit_state_.record(
+            "effective_rank", embedding_effective_rank(embeddings)
+        )
+        self.fit_state_.record(
+            "mean_dim_std", float(np.asarray(embeddings).std(axis=0).mean())
+        )
 
     def _make_kmeans(self, round_index: int):
         return make_kmeans(

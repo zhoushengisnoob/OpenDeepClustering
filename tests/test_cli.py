@@ -37,7 +37,7 @@ def test_cli_and_python_runner_share_output_schema(tmp_path, capsys):
     path.write_text(yaml.safe_dump(config), encoding="utf-8")
     direct = run_benchmark(path)
     assert direct["runs"][0]["seed"] == 3
-    assert json.loads(output.read_text())["schema_version"] == 1
+    assert json.loads(output.read_text())["schema_version"] == 2
     X, _ = make_blobs(n_samples=30, n_features=4, centers=2, random_state=3)
     labels = DEC(
         n_clusters=2,

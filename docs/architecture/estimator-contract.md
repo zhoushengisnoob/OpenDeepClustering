@@ -6,6 +6,7 @@ OpenDeepClustering exposes algorithms as scikit-learn estimators. Constructor ar
 
 - Required: `fit`, `fit_predict`, `transform`, `get_params`, `set_params`.
 - Required learned attributes: `labels_`, `embedding_`, `cluster_centers_`, `n_features_in_`, `n_iter_`, `converged_`, `stop_reason_`, `history_`.
+- Optional collapse diagnostics: `effective_rank_` and the `effective_rank` / `mean_dim_std` history series, currently provided by `DeepCluster`. Counting occupied clusters does not detect collapse, because KMeans returns `n_clusters` non-empty clusters for any embedding.
 - Optional capability: `soft_assign`/`predict_proba`, declared by `supports_soft_assignment`.
 - Optional capability: `sample`, declared by `supports_sample`.
 - Discovery: `get_capabilities()` reports taxonomy, supported input modalities and optional APIs without fitting.
