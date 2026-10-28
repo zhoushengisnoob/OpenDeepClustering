@@ -21,7 +21,7 @@ Environment note: this is the same interpreter that produced the existing 20-see
 
 ## Observed defect
 
-A 20-seed MNIST baseline recorded on 2026-09-18 gives `DeepCluster` an accuracy of 0.2040 ± 0.0137. For a ten-class problem, chance is 0.10. The standard deviation shows this is stable, not high-variance behaviour.
+The [audited 20-seed MNIST baseline](three-pattern-mnist-2026-09-18.md) gives `DeepCluster` an accuracy of 0.2040 ± 0.0140 with a 95% confidence interval of [0.1974, 0.2106]. For a ten-class problem, chance is 0.10. The interval excludes any reading of this as high variance around a usable mean.
 
 Per-round instrumentation on a 10,000-sample subset shows the embedding is already degenerate before any training occurs:
 
@@ -49,7 +49,9 @@ Global average pooling to a single spatial cell is the cause. Averaging a random
 
 ## Ablation of candidate repairs
 
-Each variant runs the library's genuine `DeepCluster.fit` loop at the reference configuration (`rounds: 20`, `hidden_dim: 64`, `embedding_dim: 32`, `batch_size: 256`, `lr: 0.05`, `n_init: 20`) on the full 70,000-sample dataset. Only the backbone class and the flip-augmentation policy are substituted. Three seeds per variant; the deviations reported are population standard deviations over those three runs.
+Each variant runs the library's genuine `DeepCluster.fit` loop at the reference configuration (`rounds: 20`, `hidden_dim: 64`, `embedding_dim: 32`, `batch_size: 256`, `lr: 0.05`, `n_init: 20`) on the full 70,000-sample dataset. Only the backbone class and the flip-augmentation policy are substituted.
+
+Three seeds per variant. The deviations in this table are **population** standard deviations over those three runs, and at n = 3 they are a weak estimate of spread: use them to compare effect sizes within the matrix, not as uncertainty claims. The 20-seed figures quoted elsewhere in this page are sample standard deviations from the [audited baseline](three-pattern-mnist-2026-09-18.md).
 
 `pool` is the spatial pooling target, `flip` the horizontal-flip augmentation, `epr` the `epochs_per_round` value, and `AE` the number of autoencoder pretraining epochs applied to the backbone before the alternating loop.
 
@@ -64,9 +66,9 @@ Each variant runs the library's genuine `DeepCluster.fit` loop at the reference 
 | A6 A3 + both | 4×4 | no | 5 | 10 | 0.3297 ± 0.0063 | 0.2729 ± 0.0129 | 2.59 | 24 |
 | A7 no pooling + both | none | no | 5 | 10 | 0.4140 ± 0.0250 | 0.3116 ± 0.0269 | 4.17 | 23 |
 
-A0 reproduces the independent 20-seed baseline of 0.2040 ± 0.0137, which establishes that the substitution harness measures the shipped behaviour.
+A0 reproduces the independent 20-seed baseline of 0.2040 ± 0.0140, which establishes that the substitution harness measures the shipped behaviour.
 
-For reference on the same data and preprocessing: raw-pixel KMeans reaches 0.5342 accuracy and `AutoencoderKMeans` reaches 0.7916 ± 0.0188 over 20 seeds.
+For reference on the same data and preprocessing: raw-pixel KMeans reaches 0.5342 accuracy and `AutoencoderKMeans` reaches 0.7916 ± 0.0193 over 20 seeds.
 
 ## Interpretation
 
@@ -112,3 +114,14 @@ Three test assertions now guard the behaviour. Two run on the tabular path and e
 Designing those assertions surfaced a trap worth recording. Well-separated Gaussian blobs do not work as a fixture: a collapsed embedding can still order them along its single surviving axis and score perfect accuracy. Verified against the defective backbone, an accuracy floor on blob data passes and catches nothing, which is the same weakness as the original 16-sample two-class fixture. The committed fixture places cluster centres on a circle at equal radius so that no one-dimensional projection separates them. Conversely the effective-rank floor catches the defect on blob data but not on the ring data, where the collapsed embedding retains rank 2.68. Neither indicator is sufficient alone, so both are asserted.
 
 Items 1 through 3 change the method's defining behaviour and its published numbers, so they remain tracked as implementation work rather than applied as part of this diagnostic record.
+
+## Declared status: unresolved
+
+`DeepCluster`'s status is **unresolved**, not a validated practical reference and not a known limited architecture reference.
+
+The root cause is identified with implementation evidence, so the behaviour is explained. But no configuration tested here clusters better than KMeans on the estimator's own raw input, which is the minimum a representation learner must clear to be worth running. A "limited architecture reference" would imply the method works within a reduced scope; these results do not support that reading on MNIST at any setting examined.
+
+No confirmation run at 20 seeds was performed. The diagnostic screen did not yield a credible protocol to confirm, and expanding the search would mean selecting a configuration against test labels. Spending 4–8 GPU-card-hours to establish the mean of a configuration already known to underperform its own input would not change the status.
+
+Reaching a validated status requires the anti-collapse work in item 3, not more seeds or further parameter search.
+
