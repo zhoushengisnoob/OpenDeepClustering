@@ -52,6 +52,10 @@ docs = [
     "mkdocs>=1.6,<2",
     "mkdocs-material>=9.5,<10",
     "mkdocstrings[python]>=0.25,<1",
+    # pymdown-extensions 12.1 changed Highlight.__init__ and breaks the
+    # mkdocs-material 9.8 integration with "missing 1 required positional
+    # argument: 'md'". Pin below that until Material supports the new signature.
+    "pymdown-extensions>=10,<12.1",
 ]
 
 [project.scripts]
