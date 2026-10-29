@@ -24,7 +24,7 @@ from opendeepclustering.estimators import (
     IDEC,
     VaDE,
 )
-from opendeepclustering.metrics import evaluate_clustering
+from opendeepclustering.metrics import embedding_effective_rank, evaluate_clustering
 
 
 ESTIMATORS = {
@@ -186,19 +186,21 @@ def run_benchmark(config_path: str | Path):
                 )
             checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
             estimator.save_checkpoint(checkpoint_path)
-        runs.append(
-            {
-                "seed": seed,
-                "metrics": scores.as_dict(),
-                "labels_sha256": hashlib.sha256(
-                    np.asarray(labels, dtype=np.int64).tobytes()
-                ).hexdigest(),
-                "duration_seconds": duration,
-                "n_iter": estimator.n_iter_,
-                "converged": estimator.converged_,
-                "stop_reason": estimator.stop_reason_,
-            }
-        )
+        run = {
+            "seed": seed,
+            "metrics": scores.as_dict(),
+            "labels_sha256": hashlib.sha256(
+                np.asarray(labels, dtype=np.int64).tobytes()
+            ).hexdigest(),
+            "duration_seconds": duration,
+            "n_iter": estimator.n_iter_,
+            "converged": estimator.converged_,
+            "stop_reason": estimator.stop_reason_,
+        }
+        embedding = getattr(estimator, "embedding_", None)
+        if embedding is not None:
+            run["effective_rank"] = embedding_effective_rank(embedding)
+        runs.append(run)
     metric_names = ("acc", "f1", "nmi", "ari")
     aggregate = {
         metric: {
@@ -208,7 +210,8 @@ def run_benchmark(config_path: str | Path):
         for metric in metric_names
     }
     result = {
-        "schema_version": 1,
+        # 2 adds the optional per-run effective_rank collapse indicator.
+        "schema_version": 2,
         "config": config,
         "config_path": str(path),
         "git_sha": _git_sha(),

@@ -25,6 +25,8 @@ nav:
       - Current baseline: benchmarks/current-baseline.md
       - Four-pattern smoke (2026-09-15): benchmarks/four-pattern-smoke-2026-09-15.md
       - MNIST reference (2026-09-15): benchmarks/mnist-reference-2026-09-15.md
+      - Three-pattern MNIST (2026-09-18): benchmarks/three-pattern-mnist-2026-09-18.md
+      - DeepCluster collapse (2026-10-28): benchmarks/deepcluster-collapse-2026-10-28.md
   - Architecture:
       - Estimator contract: architecture/estimator-contract.md
       - DEC/IDEC traceability: architecture/dec-idec-traceability.md

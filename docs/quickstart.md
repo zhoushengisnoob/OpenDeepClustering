@@ -49,6 +49,8 @@ predictions = model.predict(X)
 
 Fitted estimators expose `labels_`, `embedding_`, `cluster_centers_`, `n_iter_`, `converged_`, `stop_reason_` and `history_`. Soft assignments are method-specific; DEC, IDEC and VaDE provide them, while `AutoencoderKMeans` and DeepCluster expose hard predictions.
 
+`DeepCluster` additionally exposes `effective_rank_`, and records `effective_rank` and `mean_dim_std` in `history_` for every clustering pass. These detect representation collapse, which a count of occupied clusters cannot: KMeans returns `n_clusters` non-empty clusters whatever the embedding looks like. Use `metrics.embedding_effective_rank` to compute the same indicator for any embedding; a value near 1.0 means the representation is effectively one-dimensional.
+
 ## Reproducible CLI
 
 The CLI calls the same estimator classes as the Python API:

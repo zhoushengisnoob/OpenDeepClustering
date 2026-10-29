@@ -25,3 +25,5 @@ The following objects form the supported public API.
 ::: opendeepclustering.metrics.cluster_nmi
 
 ::: opendeepclustering.metrics.cluster_ari
+
+::: opendeepclustering.metrics.embedding_effective_rank

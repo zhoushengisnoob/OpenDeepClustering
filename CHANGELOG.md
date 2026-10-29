@@ -4,6 +4,20 @@ All notable changes to OpenDeepClustering are recorded here. The project follows
 
 ## [Unreleased]
 
+### Added
+
+- `metrics.embedding_effective_rank` for detecting representation collapse, with `DeepCluster` recording `effective_rank` and `mean_dim_std` per clustering pass and exposing `effective_rank_` after fitting.
+- Benchmark results carry a per-run `effective_rank` field for estimators that expose an `embedding_` attribute.
+- Quality-floor tests for `DeepCluster`: an effective-rank floor across multiple alternating rounds and an accuracy floor relative to KMeans on the raw input. A strict-`xfail` test pins the defective image path and will fail once that backbone is repaired.
+- `docs/benchmarks/deepcluster-collapse-2026-10-28.md` isolates the cause of DeepCluster's near-chance MNIST accuracy and bounds what the identified repairs achieve.
+- `docs/benchmarks/three-pattern-mnist-2026-09-18.md` publishes the audited 20-seed MNIST baselines for `AutoencoderKMeans`, `VaDE` and `DeepCluster`, with medians and 95% confidence intervals.
+- `docs/benchmarks/records/mnist-20seed-2026-09-18.json` commits the per-seed metrics for that batch, with `tools/audit_benchmark_batch.py` to build such a record from a run directory and `tools/report_benchmark_record.py --check` to regenerate and verify every reported aggregate without server access.
+
+### Changed
+
+- Benchmark `schema_version` raised from 1 to 2 for the added `effective_rank` field.
+- `DeepCluster`'s documented status changed from architecture reference to known defect: its 20-seed MNIST accuracy of 0.2040 ± 0.0140 is below the 0.5342 reached by KMeans on raw pixels, so it must not be used as a baseline or correctness oracle.
+
 ## [0.2.0] - 2026-09-15
 
 ### Added
