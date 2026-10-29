@@ -16,12 +16,14 @@ OpenDeepClustering is a scikit-learn-style research library accompanying our [su
 | --- | --- | --- | --- |
 | Multi-stage | `AutoencoderKMeans` | Architecture reference | Dense tabular features |
 | Iterative | `DeepCluster` | **Unresolved: known defect, not usable for clustering quality** | Dense tabular features or NCHW image tensors |
-| Generative | `VaDE` | Architecture reference | Dense tabular features |
+| Generative | `VaDE` | Validated with stated instability | Dense tabular features |
 | Simultaneous | `DEC`, `IDEC` | Reference implementations | Dense tabular features |
 
 All five expose `fit`, `fit_predict` and `transform`. `predict` is available when the chosen shallow clusterer supports it; DEC, IDEC and VaDE also expose soft assignments. VaDE additionally supports sampling. See the [algorithm status](docs/algorithms.md) and [estimator contract](docs/architecture/estimator-contract.md) for precise capabilities.
 
 “Architecture reference” means the method's defining interaction pattern and mathematical core are implemented and tested. It does **not** claim an exact reproduction of the original paper's architecture or reported scores. DEC/IDEC have [five-seed MNIST evidence](docs/benchmarks/mnist-reference-2026-09-15.md). `AutoencoderKMeans` and `VaDE` have [20-seed MNIST evidence](docs/benchmarks/three-pattern-mnist-2026-09-18.md) at 0.7916 ± 0.0193 and 0.7158 ± 0.0454 accuracy respectively, alongside [architecture smoke evidence](docs/benchmarks/four-pattern-smoke-2026-09-15.md).
+
+`VaDE` clears the bar of beating a clustering of its own raw input, but its seed range on that batch is 0.149 in accuracy. The spread originates in the pretrained embedding the Gaussian mixture is initialised on, not in the mixture fit or in component collapse; raising GMM restarts five-fold changes nothing, and longer pretraining improves the initialisation while worsening the final result. Quote its figures with the seed count and confidence interval attached. See [the variance record](docs/benchmarks/vade-variance-2026-10-29.md).
 
 `DeepCluster` is the exception and does not currently meet that bar. On MNIST it scores 0.2040 ± 0.0140 accuracy over 20 seeds, which is **below the 0.5342 reached by KMeans on raw pixels** with no representation learning at all. The cause is a representation collapse present at initialisation: global average pooling to a single spatial cell reduces the 32-dimensional embedding to an effectively one-dimensional one. Repairing every defect identified so far reaches 0.4140 ± 0.0250, still short of the raw-pixel reference. The evidence, the cause isolation and the ablation of candidate repairs are in [the collapse record](docs/benchmarks/deepcluster-collapse-2026-10-28.md). Treat this estimator as a demonstration of the iterative interaction pattern's wiring, not as a working clustering method, until that record's open items are addressed.
 
