@@ -31,6 +31,15 @@ jobs:
           for config in configs/benchmarks/*_smoke.yaml; do
             odc benchmark --config "$config" >/dev/null
           done
+      - name: Benchmark records regenerate their reported aggregates
+        run: |
+          for record in docs/benchmarks/records/*.json; do
+            python tools/report_benchmark_record.py "$record" --check >/dev/null
+          done
+      - name: Comparison table matches the committed records
+        run: python tools/build_comparison_table.py --check
+      - name: CPU example runs without a GPU
+        run: python examples/compare_methods.py --quiet
 
   package:
     name: Package validation

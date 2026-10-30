@@ -7,7 +7,7 @@ dataset:
   split: all
   subset_size: 10000
   subset_seed: 0
-  normalization: dec
+  normalization: global_rms
 parameters:
   n_clusters: 10
   dims: [500, 500, 2000, 10]

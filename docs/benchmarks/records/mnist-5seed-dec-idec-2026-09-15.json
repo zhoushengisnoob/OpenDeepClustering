@@ -1,0 +1,392 @@
+{
+  "estimators": {
+    "DEC": {
+      "aggregates": {
+        "acc": {
+          "ci95": [
+            0.7399527498455089,
+            0.8176586787259198
+          ],
+          "ci95_half_width": 0.03885296444020548,
+          "max": 0.7962428571428571,
+          "mean": 0.7788057142857143,
+          "median": 0.7916285714285715,
+          "min": 0.7229428571428571,
+          "std_population": 0.027992049308505393,
+          "std_sample": 0.03129606254167202
+        },
+        "ari": {
+          "ci95": [
+            0.6787250042808517,
+            0.7717344474462036
+          ],
+          "ci95_half_width": 0.046504721582675906,
+          "max": 0.7539944662390884,
+          "mean": 0.7252297258635276,
+          "median": 0.7420933859373093,
+          "min": 0.6603718287876628,
+          "std_population": 0.033504842638815494,
+          "std_sample": 0.03745955285791244
+        },
+        "f1": {
+          "ci95": [
+            0.7187710806537272,
+            0.8033195063067663
+          ],
+          "ci95_half_width": 0.042274212826519594,
+          "max": 0.7809876011944062,
+          "mean": 0.7610452934802467,
+          "median": 0.7755121033567189,
+          "min": 0.7003828155956022,
+          "std_population": 0.030456925667521326,
+          "std_sample": 0.03405187808911792
+        },
+        "nmi": {
+          "ci95": [
+            0.7772438026217946,
+            0.8321989813598542
+          ],
+          "ci95_half_width": 0.027477589369029772,
+          "max": 0.8238061945201429,
+          "mean": 0.8047213919908244,
+          "median": 0.8128154987296212,
+          "min": 0.7668927972396049,
+          "std_population": 0.019796534127543067,
+          "std_sample": 0.022133198014040394
+        }
+      },
+      "converged": [
+        true
+      ],
+      "dataset": {
+        "config": {
+          "download": false,
+          "kind": "mnist",
+          "normalization": "dec",
+          "root": "/data4/zhousheng/OpenDeepClustering/datasets",
+          "split": "all"
+        },
+        "features": 784,
+        "features_sha256": "e28edaf37036180081334c48697607b262608b061888b80f7b8cf24846b2c3a9",
+        "labels_sha256": "818800b46032126b329f9306cb69a6842cc53ea30318374769bb6f46cc861467",
+        "samples": 70000
+      },
+      "distinct_label_digests": 5,
+      "duration_seconds": {
+        "mean": 1329.1903654031455,
+        "median": 1337.4612333066761,
+        "total": 6645.951827015728
+      },
+      "environment": {
+        "cuda": "12.1",
+        "gpu": "NVIDIA GeForce RTX 3090",
+        "numpy": "1.26.4",
+        "platform": "Linux-5.15.0-164-generic-x86_64-with-glibc2.35",
+        "python": "3.10.21",
+        "scikit_learn": "1.4.2",
+        "torch": "2.1.2+cu121"
+      },
+      "git_sha": "7a0a4d2d5df93e4f624e29bb3ca6a5a6fcc5fd2c",
+      "n_runs": 5,
+      "parameters": {
+        "alpha": 1.0,
+        "batch_size": 256,
+        "corruption": 0.2,
+        "deterministic": true,
+        "device": "cuda",
+        "dims": [
+          500,
+          500,
+          2000,
+          10
+        ],
+        "layerwise_pretrain_epochs": 50,
+        "lr": 0.01,
+        "max_epochs": 200,
+        "momentum": 0.9,
+        "n_clusters": 10,
+        "optimizer": "sgd",
+        "pretrain_epochs": 100,
+        "pretrain_lr": 0.1,
+        "pretrain_method": "greedy",
+        "pretrain_optimizer": "sgd",
+        "tol": 0.001,
+        "update_interval": 140
+      },
+      "per_seed": [
+        {
+          "duration_seconds": 1337.1871120072901,
+          "labels_sha256": "a50dc5e6e434b62620a349b6d02663c164966d073ded0dd6ab5637eb35755e77",
+          "metrics": {
+            "acc": 0.7922714285714286,
+            "ari": 0.7422487127582795,
+            "f1": 0.7759860428304223,
+            "nmi": 0.8128154987296212
+          },
+          "n_iter": 9940,
+          "seed": 0,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 1338.1959743276238,
+          "labels_sha256": "5d8178ac3b4ad557b8ce7647890edea5130601e1c2b6b4a5a8e9f895ca323564",
+          "metrics": {
+            "acc": 0.7229428571428571,
+            "ari": 0.6603718287876628,
+            "f1": 0.7003828155956022,
+            "nmi": 0.7668927972396049
+          },
+          "n_iter": 8120,
+          "seed": 1,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 1378.4234559237957,
+          "labels_sha256": "ae7dec6187584a944ee2effa4033234d88543bac510c4282d46cc96fddf46e1a",
+          "metrics": {
+            "acc": 0.7962428571428571,
+            "ari": 0.7539944662390884,
+            "f1": 0.7809876011944062,
+            "nmi": 0.8238061945201429
+          },
+          "n_iter": 9100,
+          "seed": 2,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 1337.4612333066761,
+          "labels_sha256": "7add2fe538a2eaa13c910d55b9212f27df94f2d3a79d65f923d121d6d3f2b794",
+          "metrics": {
+            "acc": 0.7916285714285715,
+            "ari": 0.7420933859373093,
+            "f1": 0.7755121033567189,
+            "nmi": 0.8146320326202177
+          },
+          "n_iter": 9940,
+          "seed": 3,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 1254.684051450342,
+          "labels_sha256": "5d0fb1c5801369124ecb348dd0af44082a0a46b92ed315cf13ce745dcf5223ca",
+          "metrics": {
+            "acc": 0.7909428571428572,
+            "ari": 0.7274402355952984,
+            "f1": 0.7723579044240838,
+            "nmi": 0.8054604368445354
+          },
+          "n_iter": 8400,
+          "seed": 4,
+          "stop_reason": "label_change_below_tol"
+        }
+      ],
+      "schema_version": 1,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "stop_reasons": {
+        "label_change_below_tol": 5
+      }
+    },
+    "IDEC": {
+      "aggregates": {
+        "acc": {
+          "ci95": [
+            0.7532638046839681,
+            0.8344104810303177
+          ],
+          "ci95_half_width": 0.040573338173174815,
+          "max": 0.8124,
+          "mean": 0.7938371428571429,
+          "median": 0.8078571428571428,
+          "min": 0.7357142857142858,
+          "std_population": 0.029231511652143247,
+          "std_sample": 0.03268182356963474
+        },
+        "ari": {
+          "ci95": [
+            0.7051611199444906,
+            0.8079382607501097
+          ],
+          "ci95_half_width": 0.05138857040280951,
+          "max": 0.7848919016642679,
+          "mean": 0.7565496903473001,
+          "median": 0.7751513774322176,
+          "min": 0.6858725123924095,
+          "std_population": 0.03702346570807602,
+          "std_sample": 0.041393493042945186
+        },
+        "f1": {
+          "ci95": [
+            0.7316608162738997,
+            0.8210569589798159
+          ],
+          "ci95_half_width": 0.044698071352958064,
+          "max": 0.7973840057170258,
+          "mean": 0.7763588876268578,
+          "median": 0.7919620342094372,
+          "min": 0.7125295770031003,
+          "std_population": 0.03220322143584876,
+          "std_sample": 0.0360042961125181
+        },
+        "nmi": {
+          "ci95": [
+            0.8063990865159267,
+            0.8722738640068448
+          ],
+          "ci95_half_width": 0.03293738874545904,
+          "max": 0.8585091235069967,
+          "mean": 0.8393364752613858,
+          "median": 0.849153424466756,
+          "min": 0.7945630577939347,
+          "std_population": 0.023730107165316316,
+          "std_sample": 0.02653106636750106
+        }
+      },
+      "converged": [
+        true
+      ],
+      "dataset": {
+        "config": {
+          "download": false,
+          "kind": "mnist",
+          "normalization": "dec",
+          "root": "/data4/zhousheng/OpenDeepClustering/datasets",
+          "split": "all"
+        },
+        "features": 784,
+        "features_sha256": "e28edaf37036180081334c48697607b262608b061888b80f7b8cf24846b2c3a9",
+        "labels_sha256": "818800b46032126b329f9306cb69a6842cc53ea30318374769bb6f46cc861467",
+        "samples": 70000
+      },
+      "distinct_label_digests": 5,
+      "duration_seconds": {
+        "mean": 1317.7004475384952,
+        "median": 1320.1197106838226,
+        "total": 6588.502237692475
+      },
+      "environment": {
+        "cuda": "12.1",
+        "gpu": "NVIDIA GeForce RTX 3090",
+        "numpy": "1.26.4",
+        "platform": "Linux-5.15.0-164-generic-x86_64-with-glibc2.35",
+        "python": "3.10.21",
+        "scikit_learn": "1.4.2",
+        "torch": "2.1.2+cu121"
+      },
+      "git_sha": "7a0a4d2d5df93e4f624e29bb3ca6a5a6fcc5fd2c",
+      "n_runs": 5,
+      "parameters": {
+        "alpha": 1.0,
+        "batch_size": 256,
+        "corruption": 0.2,
+        "deterministic": true,
+        "device": "cuda",
+        "dims": [
+          500,
+          500,
+          2000,
+          10
+        ],
+        "gamma": 0.1,
+        "layerwise_pretrain_epochs": 50,
+        "lr": 0.001,
+        "max_epochs": 200,
+        "n_clusters": 10,
+        "optimizer": "adam",
+        "pretrain_epochs": 100,
+        "pretrain_lr": 0.1,
+        "pretrain_method": "greedy",
+        "pretrain_optimizer": "sgd",
+        "tol": 0.001,
+        "update_interval": 140
+      },
+      "per_seed": [
+        {
+          "duration_seconds": 1284.6944514475763,
+          "labels_sha256": "da89e29f35506f5ccc04a26266b264ff79464d4ecfba06ad895f148a8489176d",
+          "metrics": {
+            "acc": 0.8078571428571428,
+            "ari": 0.7751513774322176,
+            "f1": 0.7919620342094372,
+            "nmi": 0.849153424466756
+          },
+          "n_iter": 6440,
+          "seed": 0,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 1341.2193494848907,
+          "labels_sha256": "fc7fbd5622073571c198eec095b6989d81331042e1a543e2508835b80e39aacd",
+          "metrics": {
+            "acc": 0.7357142857142858,
+            "ari": 0.6858725123924095,
+            "f1": 0.7125295770031003,
+            "nmi": 0.7945630577939347
+          },
+          "n_iter": 7980,
+          "seed": 1,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 1315.5336761847138,
+          "labels_sha256": "7f7fc298ffefcc10213e88e196e4fa06fd7110abc2735d876c4db25f9724e0e4",
+          "metrics": {
+            "acc": 0.8124,
+            "ari": 0.7848919016642679,
+            "f1": 0.7973840057170258,
+            "nmi": 0.8585091235069967
+          },
+          "n_iter": 6860,
+          "seed": 2,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 1320.1197106838226,
+          "labels_sha256": "e835a120f0b006eb8801196c8b135d7a777c030562832b007fc280f5905937fb",
+          "metrics": {
+            "acc": 0.8102714285714285,
+            "ari": 0.783036241163319,
+            "f1": 0.7952317077833821,
+            "nmi": 0.8577736116556549
+          },
+          "n_iter": 6440,
+          "seed": 3,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 1326.9350498914719,
+          "labels_sha256": "60b25b3839a28969fd7070a1d7fa777b9d22953d23143dceef31f37ce90397da",
+          "metrics": {
+            "acc": 0.8029428571428572,
+            "ari": 0.7537964190842864,
+            "f1": 0.7846871134213433,
+            "nmi": 0.8366831588835868
+          },
+          "n_iter": 7280,
+          "seed": 4,
+          "stop_reason": "label_change_below_tol"
+        }
+      ],
+      "schema_version": 1,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "stop_reasons": {
+        "label_change_below_tol": 5
+      }
+    }
+  },
+  "files_audited": 10,
+  "integrity_problems": [],
+  "record_version": 1,
+  "source_directory": "/tmp/ref5"
+}

@@ -22,4 +22,8 @@ The loss combines reconstruction likelihood with the analytic expectation of `KL
 
 The paper uses Bernoulli reconstruction for MNIST and Gaussian reconstruction for other real-valued datasets. Both are selectable; Gaussian is the API default because arbitrary feature matrices are not guaranteed to lie in `[0, 1]`. The implementation uses a compact MLP and diagonal covariance, and initializes with scikit-learn's GaussianMixture. These preserve the paper's probabilistic structure but are not a claim to reproduce its dataset-specific architecture, learning-rate decay or reported accuracy without the committed reference protocol.
 
+Under that protocol the estimator is seed-sensitive: 20-seed MNIST accuracy is 0.7158 ± 0.0454 with a range of 0.149. The spread is established before ELBO training begins, in the pretrained embedding the mixture is initialised on, and ELBO training amplifies rather than closes it. Neither reconstruction loss, KL, nor component occupancy distinguishes a good seed from a bad one. Report VaDE figures from this implementation with the seed count and a confidence interval; see the [variance record](../benchmarks/vade-variance-2026-10-29.md).
+
+Two implementation details are documented there as open items. `_pretrain` excludes `posterior_log_variance` from its optimiser parameters, so the variance head enters ELBO training at its random initialisation; training it during warm-up raised three-seed accuracy by 0.038, which is suggestive but not yet confirmed. The prior's `log_variances` is unconstrained while the posterior's is clamped, which is a robustness gap that did not materialise in any observed run.
+
 No source code from third-party VaDE repositories is copied into this implementation.

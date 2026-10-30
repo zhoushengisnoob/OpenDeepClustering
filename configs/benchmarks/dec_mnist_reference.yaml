@@ -5,7 +5,7 @@ dataset:
   root: ../../datasets
   download: false
   split: all
-  normalization: dec
+  normalization: global_rms
 parameters:
   n_clusters: 10
   dims: [500, 500, 2000, 10]

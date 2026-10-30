@@ -2,6 +2,7 @@ import json
 
 import numpy as np
 import pytest
+import torch
 import yaml
 from sklearn.cluster import KMeans, MiniBatchKMeans
 
@@ -223,6 +224,88 @@ def test_vade_exposes_posterior_and_generation_interfaces():
     assert model.sample(3).shape == (3, 6)
     assert model.sample(2, cluster=1).shape == (2, 6)
     assert model.get_capabilities()["sample"] is True
+
+
+def test_vade_mixture_state_is_well_formed_after_fitting():
+    """Guard the mixture invariants behind the seed-variance diagnosis.
+
+    See docs/benchmarks/vade-variance-2026-10-29.md: VaDE's MNIST spread comes
+    from the pretrained embedding the mixture is initialised on, not from
+    malformed mixture parameters. These assertions pin the parameters so a
+    future regression there is distinguishable from that known variance.
+    """
+    X = make_separable_clusters(n_clusters=3, per_cluster=30, n_features=12)[0]
+    model = VaDE(
+        n_clusters=3,
+        hidden_dims=(16,),
+        latent_dim=4,
+        pretrain_epochs=2,
+        max_epochs=2,
+        batch_size=16,
+        n_init=2,
+        random_state=5,
+        deterministic=True,
+        device="cpu",
+    ).fit(X)
+
+    prior = model.model_.prior
+    assert prior.means.shape == (3, 4)
+    assert prior.log_variances.shape == (3, 4)
+    assert prior.logits.shape == (3,)
+    assert torch.isfinite(prior.means).all()
+    assert torch.isfinite(prior.log_variances).all()
+    assert torch.isfinite(prior.logits).all()
+
+    weights = np.asarray(prior.weights)
+    assert weights.shape == (3,)
+    np.testing.assert_allclose(weights.sum(), 1.0, atol=1e-6)
+    assert (weights >= 0).all()
+
+    assert model.cluster_centers_.shape == (3, 4)
+    assert model.embedding_.shape == (90, 4)
+
+    responsibilities = model.soft_assign(X)
+    np.testing.assert_allclose(responsibilities.sum(axis=1), 1.0, atol=1e-6)
+    assert ((responsibilities >= 0) & (responsibilities <= 1)).all()
+    assert set(np.unique(model.labels_)).issubset({0, 1, 2})
+
+
+def test_vade_restart_is_reproducible_for_a_fixed_seed():
+    """Two deterministic fits at one seed must agree exactly.
+
+    VaDE has no checkpoint/resume path — only DEC and IDEC implement one — so
+    restart reproducibility is the property available to test here. It also
+    underpins the variance diagnosis: per-seed spread is only interpretable if
+    a single seed is itself repeatable.
+    """
+    X = make_separable_clusters(n_clusters=3, per_cluster=30, n_features=12)[0]
+    settings = dict(
+        n_clusters=3,
+        hidden_dims=(16,),
+        latent_dim=4,
+        pretrain_epochs=2,
+        max_epochs=2,
+        batch_size=16,
+        n_init=2,
+        random_state=5,
+        deterministic=True,
+        device="cpu",
+    )
+    first = VaDE(**settings).fit(X)
+    second = VaDE(**settings).fit(X)
+
+    np.testing.assert_array_equal(first.labels_, second.labels_)
+    np.testing.assert_allclose(
+        first.cluster_centers_, second.cluster_centers_, atol=1e-6
+    )
+    np.testing.assert_allclose(
+        first.soft_assign(X), second.soft_assign(X), atol=1e-6
+    )
+    np.testing.assert_allclose(
+        np.asarray(first.model_.prior.weights),
+        np.asarray(second.model_.prior.weights),
+        atol=1e-6,
+    )
 
 
 @pytest.mark.parametrize(

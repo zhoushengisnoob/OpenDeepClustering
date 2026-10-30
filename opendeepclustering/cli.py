@@ -92,6 +92,9 @@ def _load_dataset(config, config_dir: Path):
         raise ValueError(f"Unsupported dataset kind: {kind!r}.")
 
     X = np.asarray(X, dtype=np.float32)
+    # Captured before subsampling so a subset and the full dataset are divided
+    # by the same constant and stay on one scale.
+    full_dataset_rms = float(np.sqrt(np.mean(np.square(X))))
     subset_size = config.get("subset_size")
     if subset_size is not None:
         if not isinstance(subset_size, int) or not 0 < subset_size <= len(X):
@@ -113,15 +116,30 @@ def _load_dataset(config, config_dir: Path):
         X = X.reshape(len(X), -1)
     elif X.ndim == 3:
         X = X[:, None, :, :]
-    if config.get("normalization") == "dec":
+    normalization = config.get("normalization")
+    if normalization == "global_rms":
+        # Scale the whole dataset by one constant so that mean(x^2) is about 1,
+        # the condition the DEC paper states. Unlike per-sample scaling this
+        # preserves differences in overall sample magnitude, which on MNIST
+        # carry class information: mean per-sample RMS ranges from 64 for digit
+        # 1 to 98 for digit 0. See docs/benchmarks/dec-idec-normalization-
+        # 2026-10-30.md for the measurement.
+        if full_dataset_rms:
+            X = X / full_dataset_rms
+    elif normalization == "dec":
         if X.ndim != 2:
             raise ValueError("DEC normalization requires flattened samples.")
         scale = np.sqrt(np.mean(np.square(X), axis=1, keepdims=True)).clip(1e-12)
         X = X / scale
-    elif config.get("normalization") == "unit":
+    elif normalization == "unit":
         maximum = float(np.max(np.abs(X)))
         if maximum:
             X = X / maximum
+    elif normalization not in (None, "none"):
+        raise ValueError(
+            f"Unknown normalization {normalization!r}. Supported values are "
+            "'global_rms', 'dec', 'unit' and 'none'."
+        )
     return X, np.asarray(y)
 
 

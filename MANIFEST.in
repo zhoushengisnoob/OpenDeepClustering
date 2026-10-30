@@ -8,6 +8,8 @@ include mkdocs.yml
 include pyproject.toml
 recursive-include configs/benchmarks *.yaml
 recursive-include docs *.md
+recursive-include docs/benchmarks/records *.json
+recursive-include examples *.py
 recursive-include pic *.png
 recursive-include tests *.py
 recursive-include tools *.py
