@@ -21,11 +21,23 @@ OpenDeepClustering is a scikit-learn-style research library accompanying our [su
 
 All five expose `fit`, `fit_predict` and `transform`. `predict` is available when the chosen shallow clusterer supports it; DEC, IDEC and VaDE also expose soft assignments. VaDE additionally supports sampling. See the [algorithm status](docs/algorithms.md) and [estimator contract](docs/architecture/estimator-contract.md) for precise capabilities.
 
-“Architecture reference” means the method's defining interaction pattern and mathematical core are implemented and tested. It does **not** claim an exact reproduction of the original paper's architecture or reported scores. DEC/IDEC have [five-seed MNIST evidence](docs/benchmarks/mnist-reference-2026-09-15.md). `AutoencoderKMeans` and `VaDE` have [20-seed MNIST evidence](docs/benchmarks/three-pattern-mnist-2026-09-18.md) at 0.7916 ± 0.0193 and 0.7158 ± 0.0454 accuracy respectively, alongside [architecture smoke evidence](docs/benchmarks/four-pattern-smoke-2026-09-15.md).
+No status on this table claims an exact reproduction of a paper's architecture or reported scores. Each one states what the evidence supports, and the [algorithm status](docs/algorithms.md) page defines the terms and links the records.
 
-`VaDE` clears the bar of beating a clustering of its own raw input, but its seed range on that batch is 0.149 in accuracy. The spread originates in the pretrained embedding the Gaussian mixture is initialised on, not in the mixture fit or in component collapse; raising GMM restarts five-fold changes nothing, and longer pretraining improves the initialisation while worsening the final result. Quote its figures with the seed count and confidence interval attached. See [the variance record](docs/benchmarks/vade-variance-2026-10-29.md).
+MNIST accuracy over the committed reference configurations. These rows are **not** directly comparable with each other: DEC and IDEC use the per-sample DEC normalization their papers specify, and DeepCluster keeps NCHW input, so the three protocols produce different feature digests. The [method comparison](docs/benchmarks/comparison.md) groups them by protocol and states which rows may be read against each other.
 
-`DeepCluster` is the exception and does not currently meet that bar. On MNIST it scores 0.2040 ± 0.0140 accuracy over 20 seeds, which is **below the 0.5342 reached by KMeans on raw pixels** with no representation learning at all. The cause is a representation collapse present at initialisation: global average pooling to a single spatial cell reduces the 32-dimensional embedding to an effectively one-dimensional one. Repairing every defect identified so far reaches 0.4140 ± 0.0250, still short of the raw-pixel reference. The evidence, the cause isolation and the ablation of candidate repairs are in [the collapse record](docs/benchmarks/deepcluster-collapse-2026-10-28.md). Treat this estimator as a demonstration of the iterative interaction pattern's wiring, not as a working clustering method, until that record's open items are addressed.
+| Estimator | MNIST ACC | Seeds | Record |
+| --- | ---: | ---: | --- |
+| `AutoencoderKMeans` | 0.7916 ± 0.0193 | 20 | [audited baseline](docs/benchmarks/three-pattern-mnist-2026-09-18.md) |
+| `VaDE` | 0.7158 ± 0.0454 | 20 | [audited baseline](docs/benchmarks/three-pattern-mnist-2026-09-18.md), [variance record](docs/benchmarks/vade-variance-2026-10-29.md) |
+| `IDEC` | 0.7938 ± 0.0327 | 5 | [five-seed reference](docs/benchmarks/mnist-reference-2026-09-15.md) |
+| `DEC` | 0.7788 ± 0.0313 | 5 | [five-seed reference](docs/benchmarks/mnist-reference-2026-09-15.md) |
+| `DeepCluster` | 0.2040 ± 0.0140 | 20 | [collapse record](docs/benchmarks/deepcluster-collapse-2026-10-28.md) |
+
+Two of these need a caveat carried with the number.
+
+`VaDE` works — it clearly beats clustering its own raw input — but its seed range on that batch is 0.149 in accuracy, so a single figure is misleading. Quote it with the seed count and confidence interval.
+
+`DeepCluster` is **below the 0.5342 that KMeans reaches on raw pixels**, so it is currently a net negative contribution on this dataset. Its embedding collapses to an effectively one-dimensional representation at initialisation; repairing every defect found so far reaches 0.4140, still short of the raw-pixel reference. Treat it as a demonstration of the iterative pattern's wiring, not as a working clustering method.
 
 ## Installation
 
@@ -165,6 +177,16 @@ odc benchmark --config configs/benchmarks/autoencoder_kmeans_smoke.yaml
 ```
 
 Run benchmark configurations from a source checkout. Smoke runs use synthetic data and validate wiring, **not** algorithm quality. The current CLI supports synthetic blobs, NPZ files and MNIST (with optional torchvision); dataset downloads are never implicit. Benchmark JSON records configuration, Git revision, environment, data checksums, seed-level metrics and stopping information. See the [benchmark guide](docs/benchmarking.md) and [quickstart](docs/quickstart.md).
+
+### Choosing a method for your own data
+
+This runs all five estimators over three seeds on two contrasting CPU datasets, each against a KMeans-on-raw-input floor that says whether the learned representation contributed at all:
+
+```bash
+python examples/compare_methods.py
+```
+
+On well-separated blobs no method beats that floor, which is itself the useful answer. On concentric rings, where distance to a single centroid does not separate the classes, a learned representation does help. Needs no GPU or download; a couple of minutes.
 
 ## Reproducibility and legacy code
 

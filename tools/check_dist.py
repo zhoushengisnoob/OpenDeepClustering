@@ -21,6 +21,7 @@ SDIST_ALLOWED_ROOTS = {
     "RELEASING.md",
     "configs",
     "docs",
+    "examples",
     "mkdocs.yml",
     "opendeepclustering",
     "opendeepclustering.egg-info",

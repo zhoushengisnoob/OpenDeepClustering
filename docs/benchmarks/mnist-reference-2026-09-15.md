@@ -13,6 +13,7 @@ This is the first traceable v0.2 scientific baseline. It is a repository referen
 - Seeds: 0, 1, 2, 3, 4; labels were used only after fitting for evaluation
 - Executable specifications: `configs/benchmarks/dec_mnist_reference.yaml` and `configs/benchmarks/idec_mnist_reference.yaml`
 - Full ignored JSON artifacts remain on the server under `benchmark_outputs/reference_seeds/`.
+- The `mean±std` rows below report **population** standard deviations, as published on 2026-09-15 and left unchanged here. Later records and the [method comparison](comparison.md) use sample standard deviations, which are the appropriate basis for an interval on the mean; at five seeds the two differ visibly (DEC ACC 2.80% against 3.13%). The per-seed values are identical, and [`records/mnist-5seed-dec-idec-2026-09-15.json`](records/mnist-5seed-dec-idec-2026-09-15.json) now commits them so either convention can be recomputed.
 
 ## Results
 

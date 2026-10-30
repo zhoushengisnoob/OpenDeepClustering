@@ -17,7 +17,6 @@ from collections import defaultdict
 from pathlib import Path
 
 METRICS = ("acc", "f1", "nmi", "ari")
-EXPECTED_SEEDS = set(range(20))
 
 
 def t_critical_95(dof: int) -> float:
@@ -35,7 +34,13 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--results", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--expected-seeds", type=int, required=True,
+        help="Seed count the batch should contain; a shortfall is reported as "
+             "an integrity problem rather than silently aggregated.",
+    )
     args = parser.parse_args()
+    expected_seeds = set(range(args.expected_seeds))
 
     files = sorted(args.results.glob("*.json"))
     groups: dict[str, list] = defaultdict(list)
@@ -83,7 +88,7 @@ def main() -> int:
 
         if len(set(seeds)) != len(seeds):
             problems.append(f"{estimator}: duplicate seeds {seeds}")
-        missing = EXPECTED_SEEDS - set(seeds)
+        missing = expected_seeds - set(seeds)
         if missing:
             problems.append(f"{estimator}: missing seeds {sorted(missing)}")
 

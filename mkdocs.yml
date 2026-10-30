@@ -21,6 +21,7 @@ nav:
       - VaDE: methods/vade.md
   - Python API: api.md
   - Reproducible benchmarks: benchmarking.md
+  - Method comparison: benchmarks/comparison.md
   - Benchmark records:
       - Current baseline: benchmarks/current-baseline.md
       - Four-pattern smoke (2026-09-15): benchmarks/four-pattern-smoke-2026-09-15.md
