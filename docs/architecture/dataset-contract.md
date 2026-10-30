@@ -2,6 +2,24 @@
 
 One implementation serves both the Python API and the benchmark CLI. This page defines what identifies a dataset, what preprocessing is permitted, and what must be recorded for a result to be traceable to the exact array the estimator saw.
 
+## Using it
+
+`opendeepclustering.data.load_dataset` is the shared implementation; the benchmark CLI calls it rather than carrying its own copy.
+
+```python
+from opendeepclustering.data import load_dataset
+
+X, y = load_dataset({"kind": "mnist", "root": "datasets", "normalization": "global_rms"})
+```
+
+It also returns provenance, which is what the benchmark output records:
+
+```python
+bundle = load_dataset({"kind": "mnist", "root": "datasets", "normalization": "global_rms"})
+bundle.provenance["features_sha256"]
+bundle.provenance["shape_signature"]
+```
+
 ## Identity
 
 A `DatasetSpec` names everything that changes the returned arrays:
@@ -55,7 +73,7 @@ STL-10's unlabeled split has no ground truth, so ACC, NMI and ARI are undefined 
 `DatasetBundle` carries the arrays and the facts needed to identify them:
 
 - `features_sha256` and `labels_sha256`, over the final arrays
-- `shape_signature`: the sample shape and dtype, so a 2D matrix and an NCHW tensor over the same bytes are distinguishable. Digests alone are not sufficient: SHA-256 over a byte view is invariant to reshaping, so the pre-`0.3` records show identical feature digests for flattened and NCHW MNIST.
+- `shape_signature`: the sample shape and dtype, so a 2D matrix and an NCHW tensor over the same bytes are distinguishable. Digests alone are not sufficient: SHA-256 over a byte view is invariant to reshaping, and the committed records show the identical digest `d27fb913...` for flattened MNIST and for DeepCluster's NCHW view of it. Benchmark results carry this field from `schema_version` 3.
 - `spec_digest`: a digest of the normalised specification, so a result can be matched back to the request that produced it
 - `n_samples`, `n_features`, `split`, `normalization`, and the resolved subset indices when subsampling applied
 

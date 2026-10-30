@@ -1,3 +1,4 @@
+import copy
 import json
 import hashlib
 
@@ -38,7 +39,7 @@ def test_cli_and_python_runner_share_output_schema(tmp_path, capsys):
     path.write_text(yaml.safe_dump(config), encoding="utf-8")
     direct = run_benchmark(path)
     assert direct["runs"][0]["seed"] == 3
-    assert json.loads(output.read_text())["schema_version"] == 2
+    assert json.loads(output.read_text())["schema_version"] == 3
     X, _ = make_blobs(n_samples=30, n_features=4, centers=2, random_state=3)
     labels = DEC(
         n_clusters=2,
@@ -132,3 +133,50 @@ def test_global_rms_divisor_is_taken_before_subsampling(tmp_path):
     rng = np.random.default_rng(0)
     indices = rng.choice(len(full), size=20, replace=False)
     np.testing.assert_allclose(subset, full[indices], rtol=1e-6)
+
+
+def test_shape_signature_distinguishes_layouts_a_digest_cannot(tmp_path):
+    """Flattened and NCHW views share a byte digest; the signature must differ.
+
+    This is the provenance gap the dataset contract records: SHA-256 over a
+    byte view is invariant to reshaping, so without shape_signature a result
+    cannot name the exact array the estimator received.
+    """
+    base = {
+        "estimator": "DeepCluster",
+        "seeds": [0],
+        "dataset": {
+            "kind": "blobs",
+            "params": {
+                "n_samples": 20, "n_features": 6, "centers": 2, "random_state": 0,
+            },
+            "normalization": "unit",
+            "reshape": [1, 2, 3],
+        },
+        "parameters": {
+            "n_clusters": 2, "hidden_dim": 8, "embedding_dim": 2, "rounds": 0,
+            "n_init": 1, "device": "cpu", "deterministic": True,
+        },
+    }
+    flat = copy.deepcopy(base)
+    flat["dataset"]["flatten"] = True
+    flat["output"] = str(tmp_path / "flat.json")
+    nchw = copy.deepcopy(base)
+    nchw["dataset"]["flatten"] = False
+    nchw["output"] = str(tmp_path / "nchw.json")
+
+    flat_result = run_benchmark(_write(tmp_path, flat, "flat"))
+    nchw_result = run_benchmark(_write(tmp_path, nchw, "nchw"))
+
+    # Same bytes in both layouts, so the digest cannot tell them apart.
+    assert (
+        flat_result["dataset"]["features_sha256"]
+        == nchw_result["dataset"]["features_sha256"]
+    )
+    # The signature can.
+    assert (
+        flat_result["dataset"]["shape_signature"]
+        != nchw_result["dataset"]["shape_signature"]
+    )
+    assert flat_result["dataset"]["shape_signature"] == "(6,):float32"
+    assert nchw_result["dataset"]["shape_signature"] == "(1, 2, 3):float32"

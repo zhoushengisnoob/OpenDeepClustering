@@ -27,3 +27,11 @@ The following objects form the supported public API.
 ::: opendeepclustering.metrics.cluster_ari
 
 ::: opendeepclustering.metrics.embedding_effective_rank
+
+## Data loading
+
+::: opendeepclustering.data.load_dataset
+
+::: opendeepclustering.data.DatasetBundle
+
+::: opendeepclustering.data.normalize

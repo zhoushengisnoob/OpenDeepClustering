@@ -15,7 +15,6 @@ import numpy as np
 import sklearn
 import torch
 import yaml
-from sklearn.datasets import make_blobs
 
 from opendeepclustering.estimators import (
     AutoencoderKMeans,
@@ -24,6 +23,7 @@ from opendeepclustering.estimators import (
     IDEC,
     VaDE,
 )
+from opendeepclustering.data import load_dataset
 from opendeepclustering.metrics import embedding_effective_rank, evaluate_clustering
 
 
@@ -59,88 +59,13 @@ def _validate_config(config):
 
 
 def _load_dataset(config, config_dir: Path):
-    kind = config["kind"]
-    if kind == "blobs":
-        params = dict(config.get("params", {}))
-        X, y = make_blobs(**params)
-    elif kind == "npz":
-        path = Path(config["path"])
-        if not path.is_absolute():
-            path = config_dir / path
-        with np.load(path) as archive:
-            X = archive[config.get("features_key", "X")]
-            y = archive[config.get("labels_key", "y")]
-    elif kind == "mnist":
-        try:
-            from torchvision.datasets import MNIST
-        except ImportError as exc:
-            raise RuntimeError("MNIST loading requires the optional torchvision package.") from exc
-        root = Path(config.get("root", "datasets"))
-        if not root.is_absolute():
-            root = config_dir / root
-        train = MNIST(root, train=True, download=config.get("download", False))
-        if config.get("split", "all") == "all":
-            test = MNIST(root, train=False, download=config.get("download", False))
-            X = np.concatenate([train.data.numpy(), test.data.numpy()])
-            y = np.concatenate([train.targets.numpy(), test.targets.numpy()])
-        elif config["split"] == "train":
-            X = train.data.numpy()
-            y = train.targets.numpy()
-        else:
-            raise ValueError("MNIST split must be 'all' or 'train'.")
-    else:
-        raise ValueError(f"Unsupported dataset kind: {kind!r}.")
+    """Delegate to the shared public loader.
 
-    X = np.asarray(X, dtype=np.float32)
-    # Captured before subsampling so a subset and the full dataset are divided
-    # by the same constant and stay on one scale.
-    full_dataset_rms = float(np.sqrt(np.mean(np.square(X))))
-    subset_size = config.get("subset_size")
-    if subset_size is not None:
-        if not isinstance(subset_size, int) or not 0 < subset_size <= len(X):
-            raise ValueError("subset_size must be a positive integer within the dataset.")
-        rng = np.random.default_rng(config.get("subset_seed", 0))
-        indices = rng.choice(len(X), size=subset_size, replace=False)
-        X, y = X[indices], np.asarray(y)[indices]
-    reshape = config.get("reshape")
-    if reshape is not None:
-        if (
-            not isinstance(reshape, list)
-            or not reshape
-            or any(not isinstance(size, int) or size <= 0 for size in reshape)
-            or int(np.prod(reshape)) != int(np.prod(X.shape[1:]))
-        ):
-            raise ValueError("reshape must be a positive shape preserving sample size.")
-        X = X.reshape(len(X), *reshape)
-    if config.get("flatten", True):
-        X = X.reshape(len(X), -1)
-    elif X.ndim == 3:
-        X = X[:, None, :, :]
-    normalization = config.get("normalization")
-    if normalization == "global_rms":
-        # Scale the whole dataset by one constant so that mean(x^2) is about 1,
-        # the condition the DEC paper states. Unlike per-sample scaling this
-        # preserves differences in overall sample magnitude, which on MNIST
-        # carry class information: mean per-sample RMS ranges from 64 for digit
-        # 1 to 98 for digit 0. See docs/benchmarks/dec-idec-normalization-
-        # 2026-10-30.md for the measurement.
-        if full_dataset_rms:
-            X = X / full_dataset_rms
-    elif normalization == "dec":
-        if X.ndim != 2:
-            raise ValueError("DEC normalization requires flattened samples.")
-        scale = np.sqrt(np.mean(np.square(X), axis=1, keepdims=True)).clip(1e-12)
-        X = X / scale
-    elif normalization == "unit":
-        maximum = float(np.max(np.abs(X)))
-        if maximum:
-            X = X / maximum
-    elif normalization not in (None, "none"):
-        raise ValueError(
-            f"Unknown normalization {normalization!r}. Supported values are "
-            "'global_rms', 'dec', 'unit' and 'none'."
-        )
-    return X, np.asarray(y)
+    Retained as a thin wrapper so existing call sites and tests keep working
+    while one implementation serves both the CLI and the Python API.
+    """
+    bundle = load_dataset(config, config_dir)
+    return bundle.features, bundle.labels
 
 
 def _git_sha():
@@ -167,6 +92,17 @@ def _environment():
 def _array_sha256(array):
     contiguous = np.ascontiguousarray(array)
     return hashlib.sha256(contiguous.view(np.uint8)).hexdigest()
+
+
+def _shape_signature(array):
+    """Describe sample layout and dtype, which a byte digest cannot.
+
+    SHA-256 over a byte view is invariant to reshaping, so flattened and NCHW
+    views of one dataset produce the identical digest. Recording the sample
+    shape and dtype alongside it is what makes the two distinguishable, and
+    what lets a result name the exact array the estimator received.
+    """
+    return f"{tuple(array.shape[1:])}:{array.dtype}"
 
 
 def run_benchmark(config_path: str | Path):
@@ -228,8 +164,9 @@ def run_benchmark(config_path: str | Path):
         for metric in metric_names
     }
     result = {
-        # 2 adds the optional per-run effective_rank collapse indicator.
-        "schema_version": 2,
+        # 2 added the optional per-run effective_rank collapse indicator.
+        # 3 added dataset.shape_signature.
+        "schema_version": 3,
         "config": config,
         "config_path": str(path),
         "git_sha": _git_sha(),
@@ -240,6 +177,10 @@ def run_benchmark(config_path: str | Path):
             "sample_shape": list(X.shape[1:]),
             "features_sha256": _array_sha256(X),
             "labels_sha256": _array_sha256(y),
+            # Pairs the digest with the layout it was taken over, since the
+            # digest alone cannot distinguish a flattened matrix from an NCHW
+            # tensor holding the same bytes.
+            "shape_signature": _shape_signature(X),
         },
         "runs": runs,
         "aggregate": aggregate,

@@ -6,6 +6,8 @@ All notable changes to OpenDeepClustering are recorded here. The project follows
 
 ### Added
 
+- `opendeepclustering.data.load_dataset` as the shared public loader, returning a `DatasetBundle` of features, labels and provenance. The benchmark CLI now calls it instead of carrying a private copy, so Python users have the same data path their benchmark results came from.
+- `dataset.shape_signature` in benchmark output (`schema_version` 3). A byte digest is invariant to reshaping, so flattened MNIST and DeepCluster's NCHW view of it carry the identical `features_sha256`; the signature is what distinguishes them.
 - `global_rms` normalization, dividing the dataset by one global constant so `mean(x^2)` is 1 across the dataset while per-sample magnitude differences survive. DEC and IDEC reference configurations now use it.
 - `docs/benchmarks/dec-idec-normalization-2026-10-30.md` records the defect and the gold-standard validation that found it, and `docs/benchmarks/dec-idec-globalrms-2026-10-30.md` is the new five-seed reference.
 - `docs/architecture/dataset-contract.md` specifies dataset identity, the closed set of preprocessing recipes, the split boundary and the provenance a result must carry.

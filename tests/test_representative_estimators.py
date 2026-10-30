@@ -367,4 +367,4 @@ def test_cli_runs_each_representative_core(tmp_path, estimator, parameters, data
     assert result["config"]["estimator"] == estimator
     assert result["runs"][0]["metrics"]["acc"] >= 0
     output = json.loads((tmp_path / f"{estimator}.json").read_text())
-    assert output["schema_version"] == 2
+    assert output["schema_version"] == 3
