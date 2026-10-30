@@ -1,0 +1,392 @@
+{
+  "estimators": {
+    "DEC": {
+      "aggregates": {
+        "acc": {
+          "ci95": [
+            0.8499881130401135,
+            0.8732747441027435
+          ],
+          "ci95_half_width": 0.011643315531315089,
+          "max": 0.8744,
+          "mean": 0.8616314285714285,
+          "median": 0.8559428571428571,
+          "min": 0.8537285714285714,
+          "std_population": 0.008388555858296174,
+          "std_sample": 0.00937869056610217
+        },
+        "ari": {
+          "ci95": [
+            0.7748031603875785,
+            0.8183701159860106
+          ],
+          "ci95_half_width": 0.021783477799216078,
+          "max": 0.8214434469957084,
+          "mean": 0.7965866381867945,
+          "median": 0.7884432851847276,
+          "min": 0.7808194312756298,
+          "std_population": 0.015694148270328587,
+          "std_sample": 0.017546591190707735
+        },
+        "f1": {
+          "ci95": [
+            0.8488989202909897,
+            0.8724820334390931
+          ],
+          "ci95_half_width": 0.011791556574051683,
+          "max": 0.8728348604994013,
+          "mean": 0.8606904768650414,
+          "median": 0.8553549766665421,
+          "min": 0.8527567326842875,
+          "std_population": 0.008495357762285076,
+          "std_sample": 0.009498098724824964
+        },
+        "nmi": {
+          "ci95": [
+            0.8179843041127559,
+            0.849635282764007
+          ],
+          "ci95_half_width": 0.01582548932562555,
+          "max": 0.8516905496216853,
+          "mean": 0.8338097934383815,
+          "median": 0.8294373218665115,
+          "min": 0.8219545134150014,
+          "std_population": 0.011401649370047227,
+          "std_sample": 0.012747431523521627
+        }
+      },
+      "converged": [
+        true
+      ],
+      "dataset": {
+        "config": {
+          "download": false,
+          "kind": "mnist",
+          "normalization": "global_rms",
+          "root": "/data4/zhousheng/OpenDeepClustering/datasets",
+          "split": "all"
+        },
+        "features": 784,
+        "features_sha256": "1aff75b934807dbd5fbf9b0a788f8f636be5fee49096486a988a3c05b4d7f58b",
+        "labels_sha256": "818800b46032126b329f9306cb69a6842cc53ea30318374769bb6f46cc861467",
+        "samples": 70000
+      },
+      "distinct_label_digests": 5,
+      "duration_seconds": {
+        "mean": 778.4833022072911,
+        "median": 762.9670008681715,
+        "total": 3892.4165110364556
+      },
+      "environment": {
+        "cuda": "12.1",
+        "gpu": "NVIDIA GeForce RTX 3090",
+        "numpy": "1.26.4",
+        "platform": "Linux-5.15.0-164-generic-x86_64-with-glibc2.35",
+        "python": "3.10.21",
+        "scikit_learn": "1.4.2",
+        "torch": "2.1.2+cu121"
+      },
+      "git_sha": "ec55123c8ad93d31f1b4f49826661009da467f3b",
+      "n_runs": 5,
+      "parameters": {
+        "alpha": 1.0,
+        "batch_size": 256,
+        "corruption": 0.2,
+        "deterministic": true,
+        "device": "cuda",
+        "dims": [
+          500,
+          500,
+          2000,
+          10
+        ],
+        "layerwise_pretrain_epochs": 50,
+        "lr": 0.01,
+        "max_epochs": 200,
+        "momentum": 0.9,
+        "n_clusters": 10,
+        "optimizer": "sgd",
+        "pretrain_epochs": 100,
+        "pretrain_lr": 0.1,
+        "pretrain_method": "greedy",
+        "pretrain_optimizer": "sgd",
+        "tol": 0.001,
+        "update_interval": 140
+      },
+      "per_seed": [
+        {
+          "duration_seconds": 750.0385948009789,
+          "labels_sha256": "8416dd98f1c2c6b17995cdfbf7a96ed7c7ae14d49cf128c5dd2bae3a8f3c9c26",
+          "metrics": {
+            "acc": 0.8688857142857143,
+            "ari": 0.8083262898383984,
+            "f1": 0.8690415190761293,
+            "nmi": 0.8421820469280762
+          },
+          "n_iter": 7140,
+          "seed": 0,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 762.9670008681715,
+          "labels_sha256": "c096f954d9a19a8b0c9f3c4e0043d9883c65d29366d2b50fcaa7df3d229d52d6",
+          "metrics": {
+            "acc": 0.8559428571428571,
+            "ari": 0.7884432851847276,
+            "f1": 0.8534642953988467,
+            "nmi": 0.8294373218665115
+          },
+          "n_iter": 7560,
+          "seed": 1,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 828.7144783623517,
+          "labels_sha256": "c698e0ebe8b2629c9b5fdd7c62dd2a3b78902d02959c919fb10e514b08de533f",
+          "metrics": {
+            "acc": 0.8552,
+            "ari": 0.7839007376395084,
+            "f1": 0.8553549766665421,
+            "nmi": 0.823784535360633
+          },
+          "n_iter": 7840,
+          "seed": 2,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 793.7643823735416,
+          "labels_sha256": "87792cf23d8f35e48d42a7c37cb17b9e0440381baceef4eac87a87122214fc77",
+          "metrics": {
+            "acc": 0.8744,
+            "ari": 0.8214434469957084,
+            "f1": 0.8728348604994013,
+            "nmi": 0.8516905496216853
+          },
+          "n_iter": 9240,
+          "seed": 3,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 756.932054631412,
+          "labels_sha256": "b1af4a95f3edf03f82f630634ccf2085352a95872275d103e1cbe309293489c5",
+          "metrics": {
+            "acc": 0.8537285714285714,
+            "ari": 0.7808194312756298,
+            "f1": 0.8527567326842875,
+            "nmi": 0.8219545134150014
+          },
+          "n_iter": 7000,
+          "seed": 4,
+          "stop_reason": "label_change_below_tol"
+        }
+      ],
+      "schema_version": 2,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "stop_reasons": {
+        "label_change_below_tol": 5
+      }
+    },
+    "IDEC": {
+      "aggregates": {
+        "acc": {
+          "ci95": [
+            0.8660805939484634,
+            0.8882108346229652
+          ],
+          "ci95_half_width": 0.011065120337250978,
+          "max": 0.8853857142857143,
+          "mean": 0.8771457142857143,
+          "median": 0.8791142857142857,
+          "min": 0.8642285714285715,
+          "std_population": 0.007971988715598689,
+          "std_sample": 0.008912954341969953
+        },
+        "ari": {
+          "ci95": [
+            0.8070235623308548,
+            0.8453145772742456
+          ],
+          "ci95_half_width": 0.019145507471695404,
+          "max": 0.840136807358966,
+          "mean": 0.8261690698025502,
+          "median": 0.830072112754344,
+          "min": 0.8042103283281365,
+          "std_population": 0.013793593279319456,
+          "std_sample": 0.015421706113271275
+        },
+        "f1": {
+          "ci95": [
+            0.8636360936187438,
+            0.8866962353594429
+          ],
+          "ci95_half_width": 0.011530070870349527,
+          "max": 0.8837667267460926,
+          "mean": 0.8751661644890933,
+          "median": 0.8772356769309816,
+          "min": 0.861739635837702,
+          "std_population": 0.008306967485842599,
+          "std_sample": 0.009287471992612288
+        },
+        "nmi": {
+          "ci95": [
+            0.8508166584107811,
+            0.8753966931869032
+          ],
+          "ci95_half_width": 0.012290017388061061,
+          "max": 0.8724543555952827,
+          "mean": 0.8631066757988421,
+          "median": 0.865240478161634,
+          "min": 0.8493800473697889,
+          "std_population": 0.008854479386211141,
+          "std_sample": 0.009899608906469362
+        }
+      },
+      "converged": [
+        true
+      ],
+      "dataset": {
+        "config": {
+          "download": false,
+          "kind": "mnist",
+          "normalization": "global_rms",
+          "root": "/data4/zhousheng/OpenDeepClustering/datasets",
+          "split": "all"
+        },
+        "features": 784,
+        "features_sha256": "1aff75b934807dbd5fbf9b0a788f8f636be5fee49096486a988a3c05b4d7f58b",
+        "labels_sha256": "818800b46032126b329f9306cb69a6842cc53ea30318374769bb6f46cc861467",
+        "samples": 70000
+      },
+      "distinct_label_digests": 5,
+      "duration_seconds": {
+        "mean": 800.0905917279422,
+        "median": 798.5401854105294,
+        "total": 4000.452958639711
+      },
+      "environment": {
+        "cuda": "12.1",
+        "gpu": "NVIDIA GeForce RTX 3090",
+        "numpy": "1.26.4",
+        "platform": "Linux-5.15.0-164-generic-x86_64-with-glibc2.35",
+        "python": "3.10.21",
+        "scikit_learn": "1.4.2",
+        "torch": "2.1.2+cu121"
+      },
+      "git_sha": "ec55123c8ad93d31f1b4f49826661009da467f3b",
+      "n_runs": 5,
+      "parameters": {
+        "alpha": 1.0,
+        "batch_size": 256,
+        "corruption": 0.2,
+        "deterministic": true,
+        "device": "cuda",
+        "dims": [
+          500,
+          500,
+          2000,
+          10
+        ],
+        "gamma": 0.1,
+        "layerwise_pretrain_epochs": 50,
+        "lr": 0.001,
+        "max_epochs": 200,
+        "n_clusters": 10,
+        "optimizer": "adam",
+        "pretrain_epochs": 100,
+        "pretrain_lr": 0.1,
+        "pretrain_method": "greedy",
+        "pretrain_optimizer": "sgd",
+        "tol": 0.001,
+        "update_interval": 140
+      },
+      "per_seed": [
+        {
+          "duration_seconds": 776.6808830685914,
+          "labels_sha256": "bd13005aefc6f6da9b1fb307b1c9a623b14cc72dace1a6eb7a4f7f7927fdc1dc",
+          "metrics": {
+            "acc": 0.8846428571428572,
+            "ari": 0.8394032826665557,
+            "f1": 0.8829749940944855,
+            "nmi": 0.8716162688669941
+          },
+          "n_iter": 6440,
+          "seed": 0,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 812.3958075940609,
+          "labels_sha256": "ce3753d535a9064db0138a7b1bd5495011b24baa93ef6bd1b7e25d12746d9602",
+          "metrics": {
+            "acc": 0.8642285714285715,
+            "ari": 0.8042103283281365,
+            "f1": 0.861739635837702,
+            "nmi": 0.8493800473697889
+          },
+          "n_iter": 6720,
+          "seed": 1,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 798.5401854105294,
+          "labels_sha256": "ae5483671915fe8aec5a6263ae50f65f5512ec8b0f001d5a51982675d93404e7",
+          "metrics": {
+            "acc": 0.8791142857142857,
+            "ari": 0.830072112754344,
+            "f1": 0.8772356769309816,
+            "nmi": 0.865240478161634
+          },
+          "n_iter": 6720,
+          "seed": 2,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 835.2585984095931,
+          "labels_sha256": "b8c0f2c686e4df4efde654459dd526f173acae879d81925159eb585552bfe285",
+          "metrics": {
+            "acc": 0.8853857142857143,
+            "ari": 0.840136807358966,
+            "f1": 0.8837667267460926,
+            "nmi": 0.8724543555952827
+          },
+          "n_iter": 6440,
+          "seed": 3,
+          "stop_reason": "label_change_below_tol"
+        },
+        {
+          "duration_seconds": 777.5774841569364,
+          "labels_sha256": "d4e6220d35e2763bf300e1065c9906757de423f1fef53c66d1ecf593f261c222",
+          "metrics": {
+            "acc": 0.8723571428571428,
+            "ari": 0.8170228179047488,
+            "f1": 0.8701137888362052,
+            "nmi": 0.8568422290005112
+          },
+          "n_iter": 6300,
+          "seed": 4,
+          "stop_reason": "label_change_below_tol"
+        }
+      ],
+      "schema_version": 2,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "stop_reasons": {
+        "label_change_below_tol": 5
+      }
+    }
+  },
+  "files_audited": 10,
+  "integrity_problems": [],
+  "record_version": 1,
+  "source_directory": "benchmark_outputs/ref_globalrms_20261030/results"
+}

@@ -13,16 +13,16 @@ Deviations are sample standard deviations; intervals are two-sided 95% Student-t
 ## Protocol group 1
 
 - Dataset: `mnist`, split `all`, 70,000 samples x 784 features
-- Preprocessing: normalization `dec`, flattened to 2D: yes
-- Feature digest after preprocessing: `e28edaf37036180081334c48697607b262608b061888b80f7b8cf24846b2c3a9`
+- Preprocessing: normalization `global_rms`, flattened to 2D: yes
+- Feature digest after preprocessing: `1aff75b934807dbd5fbf9b0a788f8f636be5fee49096486a988a3c05b4d7f58b`
 - Label digest: `818800b46032126b329f9306cb69a6842cc53ea30318374769bb6f46cc861467`
-- Commit: `7a0a4d2d5df9`
+- Commit: `ec55123c8ad9`
 - Environment: torch 2.1.2+cu121, python 3.10.21
 
 | Estimator | Status | Seeds | ACC | ACC 95% CI | NMI | ARI | Stop | Config | Record |
 | --- | --- | ---: | ---: | :---: | ---: | ---: | --- | --- | --- |
-| `IDEC` | Reference implementation | 5 | 0.7938 ± 0.0327 | [0.7533, 0.8344] | 0.8393 ± 0.0265 | 0.7565 ± 0.0414 | label_change_below_tol | [`idec_mnist_reference.yaml`](https://github.com/zhoushengisnoob/OpenDeepClustering/blob/master/configs/benchmarks/idec_mnist_reference.yaml) | [mnist-5seed-dec-idec-2026-09-15](records/mnist-5seed-dec-idec-2026-09-15.json) |
-| `DEC` | Reference implementation | 5 | 0.7788 ± 0.0313 | [0.7400, 0.8177] | 0.8047 ± 0.0221 | 0.7252 ± 0.0375 | label_change_below_tol | [`dec_mnist_reference.yaml`](https://github.com/zhoushengisnoob/OpenDeepClustering/blob/master/configs/benchmarks/dec_mnist_reference.yaml) | [mnist-5seed-dec-idec-2026-09-15](records/mnist-5seed-dec-idec-2026-09-15.json) |
+| `IDEC` | Reference implementation | 5 | 0.8771 ± 0.0089 | [0.8661, 0.8882] | 0.8631 ± 0.0099 | 0.8262 ± 0.0154 | label_change_below_tol | [`idec_mnist_reference.yaml`](https://github.com/zhoushengisnoob/OpenDeepClustering/blob/master/configs/benchmarks/idec_mnist_reference.yaml) | [mnist-5seed-dec-idec-globalrms-2026-10-30](records/mnist-5seed-dec-idec-globalrms-2026-10-30.json) |
+| `DEC` | Reference implementation | 5 | 0.8616 ± 0.0094 | [0.8500, 0.8733] | 0.8338 ± 0.0127 | 0.7966 ± 0.0175 | label_change_below_tol | [`dec_mnist_reference.yaml`](https://github.com/zhoushengisnoob/OpenDeepClustering/blob/master/configs/benchmarks/dec_mnist_reference.yaml) | [mnist-5seed-dec-idec-globalrms-2026-10-30](records/mnist-5seed-dec-idec-globalrms-2026-10-30.json) |
 
 ## Protocol group 2
 
@@ -57,7 +57,7 @@ Deviations are sample standard deviations; intervals are two-sided 95% Student-t
 
 ## Why the groups are separate
 
-The groups above differ in preprocessing, so their feature digests differ and their numbers are not on a common scale. DEC and IDEC use the per-sample DEC normalization their papers specify; the multi-stage, iterative and generative representatives use unit scaling. Placing all five in one ranking would attribute a preprocessing difference to the methods.
+The groups above differ in preprocessing, so their feature digests differ and their numbers are not on a common scale. DEC and IDEC divide the dataset by one global constant (`global_rms`), which the normalization record shows is worth 0.083 accuracy over per-sample scaling; the other representatives divide by the global maximum (`unit`), and DeepCluster additionally keeps NCHW input. Placing all five in one ranking would attribute a preprocessing difference to the methods.
 
 ## Reference points
 

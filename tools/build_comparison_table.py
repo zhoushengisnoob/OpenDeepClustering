@@ -58,6 +58,10 @@ CONFIG_LINK = (
     "https://github.com/zhoushengisnoob/OpenDeepClustering/blob/master/"
     "configs/benchmarks/{name}"
 )
+# Superseded records stay committed for traceability but are excluded from the
+# comparison, which shows the current protocol for each method.
+SUPERSEDED = {"mnist-5seed-dec-idec-2026-09-15"}
+
 CONFIG_FILE = {
     "AutoencoderKMeans": "autoencoder_kmeans_mnist_reference.yaml",
     "VaDE": "vade_mnist_reference.yaml",
@@ -108,6 +112,8 @@ def describe_key(key: tuple) -> list[str]:
 def load_records() -> list[tuple[str, dict, Path]]:
     entries = []
     for path in sorted(RECORDS_DIR.glob("*.json")):
+        if path.stem in SUPERSEDED:
+            continue
         manifest = json.loads(path.read_text(encoding="utf-8"))
         for estimator, block in manifest["estimators"].items():
             entries.append((estimator, block, path))
@@ -214,11 +220,13 @@ def render() -> str:
         lines.append("")
         lines.append(
             "The groups above differ in preprocessing, so their feature digests "
-            "differ and their numbers are not on a common scale. DEC and IDEC use "
-            "the per-sample DEC normalization their papers specify; the "
-            "multi-stage, iterative and generative representatives use unit "
-            "scaling. Placing all five in one ranking would attribute a "
-            "preprocessing difference to the methods."
+            "differ and their numbers are not on a common scale. DEC and IDEC "
+            "divide the dataset by one global constant (`global_rms`), which "
+            "the normalization record shows is worth 0.083 accuracy over "
+            "per-sample scaling; the other representatives divide by the global "
+            "maximum (`unit`), and DeepCluster additionally keeps NCHW input. "
+            "Placing all five in one ranking would attribute a preprocessing "
+            "difference to the methods."
         )
         lines.append("")
 

@@ -27,6 +27,8 @@ nav:
       - Four-pattern smoke (2026-09-15): benchmarks/four-pattern-smoke-2026-09-15.md
       - MNIST reference (2026-09-15): benchmarks/mnist-reference-2026-09-15.md
       - Three-pattern MNIST (2026-09-18): benchmarks/three-pattern-mnist-2026-09-18.md
+      - DEC/IDEC normalization defect (2026-10-30): benchmarks/dec-idec-normalization-2026-10-30.md
+      - DEC/IDEC global_rms reference (2026-10-30): benchmarks/dec-idec-globalrms-2026-10-30.md
       - DeepCluster collapse (2026-10-28): benchmarks/deepcluster-collapse-2026-10-28.md
       - VaDE seed variance (2026-10-29): benchmarks/vade-variance-2026-10-29.md
   - Architecture:

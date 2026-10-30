@@ -1,5 +1,13 @@
 # MNIST reference benchmark — 2026-09-15
 
+!!! warning "Superseded"
+    These figures used the per-sample `dec` normalization, which the
+    [normalization record](dec-idec-normalization-2026-10-30.md) shows depresses
+    MNIST accuracy by about 0.083 by discarding per-sample magnitude. The
+    current reference is the
+    [`global_rms` record](dec-idec-globalrms-2026-10-30.md): DEC 0.8616 ± 0.0094
+    and IDEC 0.8771 ± 0.0089. This page is retained for traceability.
+
 This is the first traceable v0.2 scientific baseline. It is a repository reference benchmark, not a claim of bit-for-bit reproduction of the original frameworks.
 
 ## Provenance

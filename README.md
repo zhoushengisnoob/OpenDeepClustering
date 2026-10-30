@@ -29,9 +29,11 @@ MNIST accuracy over the committed reference configurations. These rows are **not
 | --- | ---: | ---: | --- |
 | `AutoencoderKMeans` | 0.7916 ± 0.0193 | 20 | [audited baseline](docs/benchmarks/three-pattern-mnist-2026-09-18.md) |
 | `VaDE` | 0.7158 ± 0.0454 | 20 | [audited baseline](docs/benchmarks/three-pattern-mnist-2026-09-18.md), [variance record](docs/benchmarks/vade-variance-2026-10-29.md) |
-| `IDEC` | 0.7938 ± 0.0327 | 5 | [five-seed reference](docs/benchmarks/mnist-reference-2026-09-15.md) |
-| `DEC` | 0.7788 ± 0.0313 | 5 | [five-seed reference](docs/benchmarks/mnist-reference-2026-09-15.md) |
+| `IDEC` | 0.8771 ± 0.0089 | 5 | [five-seed reference](docs/benchmarks/dec-idec-globalrms-2026-10-30.md) |
+| `DEC` | 0.8616 ± 0.0094 | 5 | [five-seed reference](docs/benchmarks/dec-idec-globalrms-2026-10-30.md) |
 | `DeepCluster` | 0.2040 ± 0.0140 | 20 | [collapse record](docs/benchmarks/deepcluster-collapse-2026-10-28.md) |
+
+DEC and IDEC reach published level: the DEC paper reports 0.8430 and the IDEC paper 0.8806. Getting there required fixing a preprocessing defect worth 0.083 accuracy, found by running the original authors' released weights through our clustering loop rather than by comparing against quoted figures. The [normalization record](docs/benchmarks/dec-idec-normalization-2026-10-30.md) documents the method and the cause.
 
 Two of these need a caveat carried with the number.
 
