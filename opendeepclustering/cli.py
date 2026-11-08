@@ -238,6 +238,10 @@ def run_benchmark(config_path: str | Path):
             "samples": len(X),
             "features": int(np.prod(X.shape[1:])),
             "sample_shape": list(X.shape[1:]),
+            "shape_signature": {
+                "sample_shape": list(X.shape[1:]),
+                "dtype": X.dtype.str,
+            },
             "features_sha256": _array_sha256(X),
             "labels_sha256": _array_sha256(y),
         },

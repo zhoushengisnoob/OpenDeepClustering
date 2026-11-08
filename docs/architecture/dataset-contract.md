@@ -55,8 +55,16 @@ STL-10's unlabeled split has no ground truth, so ACC, NMI and ARI are undefined 
 `DatasetBundle` carries the arrays and the facts needed to identify them:
 
 - `features_sha256` and `labels_sha256`, over the final arrays
-- `shape_signature`: the sample shape and dtype, so a 2D matrix and an NCHW tensor over the same bytes are distinguishable. Digests alone are not sufficient: SHA-256 over a byte view is invariant to reshaping, so the pre-`0.3` records show identical feature digests for flattened and NCHW MNIST.
+- `shape_signature`: the sample shape and dtype, so a 2D matrix and an NCHW tensor over the same bytes are distinguishable. Digests alone are not sufficient: SHA-256 over a byte view is invariant to reshaping, so the pre-`0.3` records show identical feature digests for flattened and NCHW MNIST. The CLI now records this as `{"sample_shape": [...], "dtype": "<f4"}` alongside the existing `sample_shape`; `dtype` uses NumPy's `dtype.str`, including byte order and item size. The shape excludes the sample-count axis.
 - `spec_digest`: a digest of the normalised specification, so a result can be matched back to the request that produced it
 - `n_samples`, `n_features`, `split`, `normalization`, and the resolved subset indices when subsampling applied
 
 Benchmark output records all of these. A result that cannot name the exact post-preprocessing array it measured is not usable as evidence.
+
+The additional `dataset.shape_signature` field is optional metadata within benchmark
+schema version 2. Existing `features_sha256`/`labels_sha256` values and their
+byte-view hashing are unchanged, and archived records without this field remain
+readable. Older records may already contain `sample_shape`; absence of the
+combined signature leaves dtype unknown, not necessarily shape. Preserve any
+recorded shape, and do not infer the missing dtype or rewrite an archive's
+digest to supply it.
