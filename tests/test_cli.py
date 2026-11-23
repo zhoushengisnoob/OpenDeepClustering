@@ -38,7 +38,11 @@ def test_cli_and_python_runner_share_output_schema(tmp_path, capsys):
     path.write_text(yaml.safe_dump(config), encoding="utf-8")
     direct = run_benchmark(path)
     assert direct["runs"][0]["seed"] == 3
-    assert json.loads(output.read_text())["schema_version"] == 2
+    saved = json.loads(output.read_text())
+    assert saved["schema_version"] == 2
+    assert saved["dataset"]["shape_signature"] == {
+        "sample_shape": [4], "dtype": np.dtype(np.float32).str,
+    }
     X, _ = make_blobs(n_samples=30, n_features=4, centers=2, random_state=3)
     labels = DEC(
         n_clusters=2,
@@ -132,3 +136,56 @@ def test_global_rms_divisor_is_taken_before_subsampling(tmp_path):
     rng = np.random.default_rng(0)
     indices = rng.choice(len(full), size=20, replace=False)
     np.testing.assert_allclose(subset, full[indices], rtol=1e-6)
+
+
+@pytest.mark.parametrize("dtype", ["<f4", ">f4"])
+def test_shape_signature_distinguishes_same_bytes_in_cli_records(tmp_path, capsys, monkeypatch, dtype):
+    """Record layout and dtype without changing the existing byte-view digest."""
+    from opendeepclustering import cli
+
+    class MetadataOnlyEstimator:
+        n_iter_ = 0
+        converged_ = False
+        stop_reason_ = "synthetic-provenance-fixture"
+
+        def __init__(self, **parameters):
+            pass
+
+        def fit_predict(self, X):
+            return np.arange(len(X), dtype=np.int64) % 2
+
+    monkeypatch.setattr(cli, "ESTIMATORS", {"MetadataOnly": MetadataOnlyEstimator})
+    monkeypatch.setattr(cli, "_environment", lambda: {"synthetic_only": True})
+    monkeypatch.setattr(cli, "_git_sha", lambda: "synthetic-provenance-fixture")
+    # Interpret the same little-endian backing bytes from both byte orders.
+    matrix = np.arange(8, dtype="<f4").reshape(2, 4).view(dtype)
+    arrays = [
+        matrix, matrix.reshape(2, 1, 2, 2), matrix.view(np.uint32),
+        matrix.view(matrix.dtype.newbyteorder("S")),
+    ]
+    signatures = []
+    feature_digests = []
+    output = tmp_path / "metadata.json"
+    config = {
+        "estimator": "MetadataOnly", "dataset": {"kind": "blobs"}, "output": str(output),
+    }
+    path = _write(tmp_path, config, "metadata")
+    for X in arrays:
+        monkeypatch.setattr(
+            cli, "_load_dataset", lambda config, config_dir: (X, np.array([0, 1])),
+        )
+        assert cli.main(["benchmark", "--config", str(path)]) == 0
+        result = json.loads(capsys.readouterr().out)
+        assert json.loads(output.read_text()) == result
+        assert result["schema_version"] == 2
+        dataset = result["dataset"]
+        assert dataset["samples"] == 2
+        assert dataset["features"] == 4
+        assert dataset["sample_shape"] == list(X.shape[1:])
+        assert dataset["shape_signature"] == {
+            "sample_shape": list(X.shape[1:]), "dtype": X.dtype.str,
+        }
+        signatures.append(dataset["shape_signature"])
+        feature_digests.append(dataset["features_sha256"])
+    assert len(set(feature_digests)) == 1
+    assert len({json.dumps(signature, sort_keys=True) for signature in signatures}) == len(arrays)
